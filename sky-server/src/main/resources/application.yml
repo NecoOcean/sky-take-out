@@ -12,6 +12,7 @@ spring:
     username: ${sky.datasource.username}
     password: ${sky.datasource.password}
 
+# ==================== springdoc-openapi (Swagger) 配置 ====================
 springdoc:
   api-docs:
     enabled: true
@@ -19,8 +20,11 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
+  # 扫描所有Controller包
   packages-to-scan: com.sky.controller
-  paths-to-match: /admin/**, /user/**
+  # 匹配所有路径
+  paths-to-match: /**
+  # API 分组配置
   group-configs:
     - group: admin
       packages-to-scan: com.sky.controller.admin
@@ -28,6 +32,14 @@ springdoc:
     - group: user
       packages-to-scan: com.sky.controller.user
       paths-to-match: /user/**
+
+# ==================== OpenAPI 文档元数据配置 ====================
+# <-- 新增：添加此配置块来定义API文档的标题、版本等信息 -->
+openapi:
+  info:
+    title: 苍穹外卖项目 API 文档 # <-- 新增：API文档的标题
+    description: 苍穹外卖项目的后台管理系统和移动端用户的API接口文档。 # <-- 新增：API文档的详细描述
+    version: 1.0.0 # <-- 新增：API的版本号，这会解决版本字段缺失的问题
 
 mybatis-plus:
   type-aliases-package: com.sky.entity

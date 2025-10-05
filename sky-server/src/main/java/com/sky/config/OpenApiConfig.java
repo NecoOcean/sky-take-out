@@ -14,10 +14,11 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI skyOpenAPI() {
         return new OpenAPI()
+                .openapi("3.0.1")
                 .info(new Info()
                         .title("Sky 外卖 API")
                         .description("管理端与用户端接口文档")
-                        .version("v1"))
+                        .version("1.0.0"))
                 .components(new Components().addSecuritySchemes("tokenHeader",
                         new SecurityScheme()
                                 .name("token")

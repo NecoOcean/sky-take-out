@@ -1,10 +1,12 @@
 package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.context.BaseContext;
 import com.sky.exception.AccountLockedException;
@@ -12,6 +14,7 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.service.EmployeeService;
+import com.sky.result.PageResult;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
@@ -115,6 +118,43 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 保存
         employeeMapper.insert(employee);
+    }
+
+    /**
+     * 员工分页查询
+     * 支持根据姓名模糊查询
+     * Path: /admin/employee/page
+     * Method: GET
+     * @param queryDTO 分页查询参数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult page(EmployeePageQueryDTO queryDTO) {
+        // 构造分页对象
+        Page<Employee> page = new Page<>(queryDTO.getPage(), queryDTO.getPageSize());
+
+        // 构造查询条件
+        LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<>();
+        if (queryDTO.getName() != null && !queryDTO.getName().isEmpty()) {
+            wrapper.like(Employee::getName, queryDTO.getName());
+        }
+        // 排序：按更新时间倒序，保证最新数据在前
+        wrapper.orderByDesc(Employee::getUpdateTime);
+
+        // 执行分页查询
+        employeeMapper.selectPage(page, wrapper);
+
+        // 清理敏感字段，避免密码泄露
+        if (page.getRecords() != null) {
+            for (Employee emp : page.getRecords()) {
+                if (emp != null) {
+                    emp.setPassword(null);
+                }
+            }
+        }
+
+        // 返回统一分页结构
+        return new PageResult(page.getTotal(), page.getRecords());
     }
 
     /**
