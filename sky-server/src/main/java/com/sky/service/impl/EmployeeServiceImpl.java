@@ -15,6 +15,7 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.service.EmployeeService;
 import com.sky.result.PageResult;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
@@ -158,6 +159,37 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * 更新员工账号状态（启用/禁用）
+     * @param id 员工ID
+     * @param status 状态，1为启用，0为禁用
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatus(Long id, Integer status) {
+        if (id == null) {
+            throw new IllegalArgumentException("员工ID不能为空");
+        }
+        if (!Objects.equals(status, com.sky.constant.StatusConstant.ENABLE)
+                && !Objects.equals(status, com.sky.constant.StatusConstant.DISABLE)) {
+            throw new IllegalArgumentException("状态值非法，仅支持0或1");
+        }
+
+        // 仅更新必要字段，避免覆盖其他字段
+        Employee toUpdate = new Employee();
+        toUpdate.setId(id);
+        toUpdate.setStatus(status);
+
+        // 审计字段
+        toUpdate.setUpdateTime(java.time.LocalDateTime.now());
+        Long currentId = com.sky.context.BaseContext.getCurrentId();
+        if (currentId != null) {
+            toUpdate.setUpdateUser(currentId);
+        }
+
+        employeeMapper.updateById(toUpdate);
+    }
+
+    /**
      * 对密码进行加密
      * @param plainPassword 明文密码
      * @return 加密后的哈希字符串
@@ -182,5 +214,50 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new IllegalArgumentException("Invalid hash provided for comparison");
         }
         return BCrypt.checkpw(plainPassword, hashedPassword);
+    }
+
+    /**
+     * 编辑员工信息
+     * 仅允许编辑：username、name、phone、sex、idNumber
+     * 不修改：password、status、createTime、createUser 等
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void edit(EmployeeDTO employeeDTO) {
+        if (employeeDTO == null || employeeDTO.getId() == null) {
+            throw new IllegalArgumentException("编辑员工信息时，id不能为空");
+        }
+        Employee toUpdate = new Employee();
+        toUpdate.setId(employeeDTO.getId());
+        toUpdate.setUsername(employeeDTO.getUsername());
+        toUpdate.setName(employeeDTO.getName());
+        toUpdate.setPhone(employeeDTO.getPhone());
+        toUpdate.setSex(employeeDTO.getSex());
+        toUpdate.setIdNumber(employeeDTO.getIdNumber());
+
+        // 审计字段
+        toUpdate.setUpdateTime(java.time.LocalDateTime.now());
+        Long currentId = BaseContext.getCurrentId();
+        if (currentId != null) {
+            toUpdate.setUpdateUser(currentId);
+        }
+        employeeMapper.updateById(toUpdate);
+    }
+
+    /**
+     * 根据ID查询员工详情（脱敏密码）
+     * @param id 员工ID
+     * @return 员工详情
+     */
+    @Override
+    public Employee getById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("查询员工详情时，id不能为空");
+        }
+        Employee employee = employeeMapper.selectById(id);
+        if (employee != null) {
+            employee.setPassword(null);
+        }
+        return employee;
     }
 }

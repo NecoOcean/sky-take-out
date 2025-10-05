@@ -13,12 +13,7 @@ import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,6 +86,19 @@ public class EmployeeController {
     }
 
     /**
+     * 编辑员工信息
+     * Path: /admin/employee
+     * Method: PUT
+     * 请求体：EmployeeDTO（包含 id、username、name、phone、sex、idNumber）
+     */
+    @PutMapping
+    public Result<String> edit(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("编辑员工信息：{}", employeeDTO);
+        employeeService.edit(employeeDTO);
+        return Result.success();
+    }
+
+    /**
      * 员工分页查询
      * Path: /admin/employee/page
      * Method: GET
@@ -100,6 +108,31 @@ public class EmployeeController {
         log.info("员工分页查询：{}", queryDTO);
         PageResult pageResult = employeeService.page(queryDTO);
         return Result.success(pageResult);
+    }
+
+    /**
+     * 根据ID查询员工详情
+     * Path: /admin/employee/{id}
+     * Method: GET
+     */
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Long id) {
+        log.info("查询员工详情, id={}", id);
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    /**
+     * 启用/禁用员工账号
+     * Path: /admin/employee/status/{status}
+     * Method: POST
+     * 参数：路径参数 status（1启用，0禁用），Query 参数 id（员工ID）
+     */
+    @PostMapping("/status/{status}")
+    public Result<String> updateStatus(@PathVariable Integer status, @RequestParam Long id) {
+        log.info("更新员工状态, id={}, status={}", id, status);
+        employeeService.updateStatus(id, status);
+        return Result.success();
     }
 
 }
