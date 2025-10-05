@@ -24,7 +24,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.2.21</version>
+            <version>2.2.36</version>
         </dependency>
 
         <!-- Spring format annotations (DateTimeFormat) -->

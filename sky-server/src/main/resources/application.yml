@@ -12,6 +12,23 @@ spring:
     username: ${sky.datasource.username}
     password: ${sky.datasource.password}
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
+  packages-to-scan: com.sky.controller
+  paths-to-match: /admin/**, /user/**
+  group-configs:
+    - group: admin
+      packages-to-scan: com.sky.controller.admin
+      paths-to-match: /admin/**
+    - group: user
+      packages-to-scan: com.sky.controller.user
+      paths-to-match: /user/**
+
 mybatis-plus:
   type-aliases-package: com.sky.entity
   configuration:
@@ -28,8 +45,10 @@ logging:
 sky:
   jwt:
     # 设置jwt签名加密时使用的秘钥
-    admin-secret-key: itcast
+    admin-secret-key: ZK8fM1pQk9s2cT7vR4xY9aL3uN6eB2dH
     # 设置jwt过期时间
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+    # 可选：用户端JWT秘钥（同样需>=256位）；生产建议使用环境变量注入
+    # user-secret-key: A2b4D6f8H0j2L4n6P8r0T2v4X6z8B0d2F4h6J8k0M2q4S6u8W0y2C4e6G8

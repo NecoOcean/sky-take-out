@@ -26,10 +26,12 @@
         <druid>1.2.21</druid>
         <aliyun-sdk-oss.version>3.18.1</aliyun-sdk-oss.version>
         <wechatpay-apache-httpclient.version>0.6.0</wechatpay-apache-httpclient.version>
-        <springdoc-openapi>2.6.0</springdoc-openapi>
+        <springdoc-openapi>2.8.5</springdoc-openapi>
         <aspectj>1.9.22.1</aspectj>
         <jjwt.impl>0.11.5</jjwt.impl>
         <poi>5.4.1</poi>
+        <jbcrypt>0.4</jbcrypt>
+        <knife4j-spring-boot-starter>3.0.3</knife4j-spring-boot-starter>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -134,6 +136,13 @@
                         <artifactId>httpclient</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <!-- 密码加密 -->
+            <dependency>
+                <groupId>org.mindrot</groupId>
+                <artifactId>jbcrypt</artifactId>
+                <version>${jbcrypt}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

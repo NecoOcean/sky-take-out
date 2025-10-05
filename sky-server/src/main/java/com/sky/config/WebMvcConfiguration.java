@@ -28,16 +28,22 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/employee/login");
+                .excludePathPatterns(
+                        "/admin/employee/login",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
+                );
     }
 
     // Swagger2/Knife4j bean removed; using springdoc-openapi auto configuration
+
 
     /**
      * 设置静态资源映射
      * @param registry
      */
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // springdoc provides /swagger-ui/index.html automatically
+        // springdoc 提供 /swagger-ui/index.html，无需额外静态资源映射
     }
 }
