@@ -3,8 +3,10 @@ package com.sky.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.entity.Employee;
+import com.sky.context.BaseContext;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
@@ -45,10 +47,26 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        // --- 核心改动：使用jBcrypt进行密码校验 ---
-        // BCrypt.checkpw()方法会自动从存储的哈希密码中提取盐(salt)，
-        // 然后用该盐对用户输入的明文密码进行哈希，最后比较两个哈希值是否相等。
-        if (!BCrypt.checkpw(password, employee.getPassword())) {
+        // --- 支持BCrypt并迁移旧明文密码 ---
+        String storedPassword = employee.getPassword();
+        if (storedPassword == null) {
+            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        }
+        boolean passwordMatched;
+        if (storedPassword.startsWith("$2a$")) {
+            // 数据库已是BCrypt哈希
+            passwordMatched = checkPassword(password, storedPassword);
+        } else {
+            // 旧数据可能为明文，进行直接比对，并在匹配时迁移为BCrypt
+            passwordMatched = Objects.equals(password, storedPassword);
+            if (passwordMatched) {
+                String newHashed = encryptPassword(password);
+                employee.setPassword(newHashed);
+                // 将密码升级为BCrypt哈希
+                employeeMapper.updateById(employee);
+            }
+        }
+        if (!passwordMatched) {
             // 密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
@@ -61,6 +79,42 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 3、返回实体对象
         return employee;
+    }
+
+    /**
+     * 新增员工
+     *
+     * @param employeeDTO 新增员工数据
+     */
+    @Override
+    public void addEmployee(EmployeeDTO employeeDTO) {
+        // 组装实体
+        Employee employee = Employee.builder()
+                .username(employeeDTO.getUsername())
+                .name(employeeDTO.getName())
+                .phone(employeeDTO.getPhone())
+                .sex(employeeDTO.getSex())
+                .idNumber(employeeDTO.getIdNumber())
+                // 默认启用状态
+                .status(StatusConstant.ENABLE)
+                .build();
+
+        // 设置默认密码并加密（与登录保持一致使用 BCrypt）
+        String defaultPlainPassword = "123456";
+        employee.setPassword(encryptPassword(defaultPlainPassword));
+
+        // 审计字段填充（手动设置，避免空值）
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        employee.setCreateTime(now);
+        employee.setUpdateTime(now);
+        Long currentId = BaseContext.getCurrentId();
+        if (currentId != null) {
+            employee.setCreateUser(currentId);
+            employee.setUpdateUser(currentId);
+        }
+
+        // 保存
+        employeeMapper.insert(employee);
     }
 
     /**

@@ -32,6 +32,7 @@
         <poi>5.4.1</poi>
         <jbcrypt>0.4</jbcrypt>
         <knife4j-spring-boot-starter>3.0.3</knife4j-spring-boot-starter>
+        <knife4j-openapi3-jakarta-spring-boot-starter>4.5.0</knife4j-openapi3-jakarta-spring-boot-starter>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -143,6 +144,13 @@
                 <groupId>org.mindrot</groupId>
                 <artifactId>jbcrypt</artifactId>
                 <version>${jbcrypt}</version>
+            </dependency>
+
+            <!-- Knife4j 增强 UI 依赖 -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j-openapi3-jakarta-spring-boot-starter}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
