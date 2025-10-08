@@ -8,7 +8,6 @@ import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
-import com.sky.context.BaseContext;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
@@ -107,15 +106,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         String defaultPlainPassword = "123456";
         employee.setPassword(encryptPassword(defaultPlainPassword));
 
-        // 审计字段填充（手动设置，避免空值）
-        java.time.LocalDateTime now = java.time.LocalDateTime.now();
-        employee.setCreateTime(now);
-        employee.setUpdateTime(now);
-        Long currentId = BaseContext.getCurrentId();
-        if (currentId != null) {
-            employee.setCreateUser(currentId);
-            employee.setUpdateUser(currentId);
-        }
+        // 审计字段不再手动赋值，依赖 MyBatis-Plus 自动填充
 
         // 保存
         employeeMapper.insert(employee);
@@ -179,12 +170,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         toUpdate.setId(id);
         toUpdate.setStatus(status);
 
-        // 审计字段
-        toUpdate.setUpdateTime(java.time.LocalDateTime.now());
-        Long currentId = com.sky.context.BaseContext.getCurrentId();
-        if (currentId != null) {
-            toUpdate.setUpdateUser(currentId);
-        }
+        // 审计字段不再手动赋值，依赖 MyBatis-Plus 自动填充
 
         employeeMapper.updateById(toUpdate);
     }
@@ -235,12 +221,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         toUpdate.setSex(employeeDTO.getSex());
         toUpdate.setIdNumber(employeeDTO.getIdNumber());
 
-        // 审计字段
-        toUpdate.setUpdateTime(java.time.LocalDateTime.now());
-        Long currentId = BaseContext.getCurrentId();
-        if (currentId != null) {
-            toUpdate.setUpdateUser(currentId);
-        }
+        // 审计字段不再手动赋值，依赖 MyBatis-Plus 自动填充
         employeeMapper.updateById(toUpdate);
     }
 

@@ -145,5 +145,4 @@ public class CategoryServiceImpl implements CategoryService {
                     .orderByDesc(Category::getUpdateTime);
         return categoryMapper.selectList(queryWrapper);
     }
-
 }
