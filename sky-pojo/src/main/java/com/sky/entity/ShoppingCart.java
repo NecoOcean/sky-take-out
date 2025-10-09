@@ -15,7 +15,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 购物车
+ * 购物车实体类
+ * 用于存储用户添加到购物车的菜品或套餐信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder

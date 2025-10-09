@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * 订单统计数据传输对象（VO）
+ * 用于在前端展示订单的统计信息，包括日期列表、每日订单数、每日有效订单数和订单总数等
+ */
 @Data
 @Builder
 @NoArgsConstructor

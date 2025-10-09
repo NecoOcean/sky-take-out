@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * 营业额数据传输对象（VO）
+ * 用于在前端展示营业额的统计信息，包括日期和对应的营业额
+ */
 @Data
 @Builder
 @NoArgsConstructor

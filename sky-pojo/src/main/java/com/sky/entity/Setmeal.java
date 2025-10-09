@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 套餐
+ * 套餐实体类
+ * 用于存储套餐信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder

@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 订单数据传输对象（VO）
+ * 用于在前端展示订单的详细信息，包括订单基本信息、订单菜品信息和订单详情等
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor

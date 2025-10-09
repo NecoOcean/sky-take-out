@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * 用户统计数据传输对象（VO）
+ * 用于在前端展示用户的统计信息，包括日期、用户总量和新增用户数量
+ */
 @Data
 @Builder
 @NoArgsConstructor

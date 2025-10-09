@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * 菜品详情数据传输对象（VO）
+ * 用于在前端展示菜品的详细信息，包括名称、份数、图片和描述
+ */
 @Data
 @Builder
 @NoArgsConstructor

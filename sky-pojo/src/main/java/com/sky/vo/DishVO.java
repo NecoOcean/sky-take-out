@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 菜品数据传输对象（VO）
+ * 用于在前端展示菜品的详细信息，包括名称、分类、价格、图片、描述和状态
+ */
 @Data
 @Builder
 @NoArgsConstructor

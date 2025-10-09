@@ -31,39 +31,49 @@ import java.util.List;
 
 /**
  * 微信支付工具类
+ * 提供微信支付相关接口的调用封装，包括下单、支付、退款等功能
  */
 @Component
 public class WeChatPayUtil {
 
-    //微信支付下单接口地址
+    /**
+     * 微信支付下单接口地址
+     */
     public static final String JSAPI = "https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi";
 
-    //申请退款接口地址
+    /**
+     * 申请退款接口地址
+     */
     public static final String REFUNDS = "https://api.mch.weixin.qq.com/v3/refund/domestic/refunds";
 
+    /**
+     * 微信配置属性
+     */
     @Autowired
     private WeChatProperties weChatProperties;
 
     /**
      * 获取调用微信接口的客户端工具对象
+     * 该方法会加载商户私钥和微信支付平台证书，构建具有自动签名和验签功能的HttpClient
      *
-     * @return
+     * @return CloseableHttpClient 微信支付专用HTTP客户端，如果加载失败则返回null
      */
     private CloseableHttpClient getClient() {
         PrivateKey merchantPrivateKey = null;
         try {
-            //merchantPrivateKey商户API私钥，如何加载商户API私钥请看常见问题
+            // 加载商户API私钥，用于请求签名
             merchantPrivateKey = PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath())));
-            //加载平台证书文件
+            // 加载微信支付平台证书，用于响应验签
             X509Certificate x509Certificate = PemUtil.loadCertificate(new FileInputStream(new File(weChatProperties.getWeChatPayCertFilePath())));
-            //wechatPayCertificates微信支付平台证书列表。你也可以使用后面章节提到的“定时更新平台证书功能”，而不需要关心平台证书的来龙去脉
+            // 构建微信支付平台证书列表
             List<X509Certificate> wechatPayCertificates = Arrays.asList(x509Certificate);
 
+            // 创建微信支付HTTP客户端构建器
             WechatPayHttpClientBuilder builder = WechatPayHttpClientBuilder.create()
                     .withMerchant(weChatProperties.getMchid(), weChatProperties.getMchSerialNo(), merchantPrivateKey)
                     .withWechatPay(wechatPayCertificates);
 
-            // 通过WechatPayHttpClientBuilder构造的HttpClient，会自动的处理签名和验签
+            // 构建具有自动签名和验签功能的HttpClient
             CloseableHttpClient httpClient = builder.build();
             return httpClient;
         } catch (FileNotFoundException e) {
@@ -73,11 +83,13 @@ public class WeChatPayUtil {
     }
 
     /**
-     * 发送post方式请求
+     * 发送POST方式请求
+     * 该方法使用微信支付专用HTTP客户端发送POST请求，并自动处理签名和验签
      *
-     * @param url
-     * @param body
-     * @return
+     * @param url  请求地址
+     * @param body 请求体（JSON格式）
+     * @return 响应内容（JSON格式字符串）
+     * @throws Exception 发送请求或处理响应时可能抛出的异常
      */
     private String post(String url, String body) throws Exception {
         CloseableHttpClient httpClient = getClient();
@@ -99,10 +111,12 @@ public class WeChatPayUtil {
     }
 
     /**
-     * 发送get方式请求
+     * 发送GET方式请求
+     * 该方法使用微信支付专用HTTP客户端发送GET请求，并自动处理签名和验签
      *
-     * @param url
-     * @return
+     * @param url 请求地址
+     * @return 响应内容（JSON格式字符串）
+     * @throws Exception 发送请求或处理响应时可能抛出的异常
      */
     private String get(String url) throws Exception {
         CloseableHttpClient httpClient = getClient();
@@ -123,13 +137,15 @@ public class WeChatPayUtil {
     }
 
     /**
-     * jsapi下单
+     * JSAPI下单
+     * 调用微信支付JSAPI接口创建支付订单，适用于小程序支付场景
      *
-     * @param orderNum    商户订单号
-     * @param total       总金额
-     * @param description 商品描述
-     * @param openid      微信用户的openid
-     * @return
+     * @param orderNum    商户订单号，需保证唯一性
+     * @param total       订单总金额，单位为元
+     * @param description 商品描述，将展示给用户
+     * @param openid      微信用户的openid，标识支付用户
+     * @return 微信支付返回的JSON响应字符串
+     * @throws Exception 调用接口时可能抛出的异常
      */
     private String jsapi(String orderNum, BigDecimal total, String description, String openid) throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -140,6 +156,7 @@ public class WeChatPayUtil {
         jsonObject.put("notify_url", weChatProperties.getNotifyUrl());
 
         JSONObject amount = new JSONObject();
+        // 将金额从元转换为分，并四舍五入保留两位小数
         amount.put("total", total.multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());
         amount.put("currency", "CNY");
 
@@ -156,17 +173,19 @@ public class WeChatPayUtil {
 
     /**
      * 小程序支付
+     * 统一下单并生成调起支付所需参数，返回给前端用于调起微信支付
      *
-     * @param orderNum    商户订单号
-     * @param total       金额，单位 元
-     * @param description 商品描述
-     * @param openid      微信用户的openid
-     * @return
+     * @param orderNum    商户订单号，需保证唯一性
+     * @param total       订单金额，单位为元
+     * @param description 商品描述，将展示给用户
+     * @param openid      微信用户的openid，标识支付用户
+     * @return JSONObject 包含调起支付所需参数的JSON对象，若下单失败则返回微信原始错误信息
+     * @throws Exception 调用接口或签名过程中可能抛出的异常
      */
     public JSONObject pay(String orderNum, BigDecimal total, String description, String openid) throws Exception {
-        //统一下单，生成预支付交易单
+        // 统一下单，生成预支付交易单
         String bodyAsString = jsapi(orderNum, total, description, openid);
-        //解析返回结果
+        // 解析返回结果
         JSONObject jsonObject = JSON.parseObject(bodyAsString);
         System.out.println(jsonObject);
 
@@ -179,7 +198,7 @@ public class WeChatPayUtil {
             list.add(timeStamp);
             list.add(nonceStr);
             list.add("prepay_id=" + prepayId);
-            //二次签名，调起支付需要重新签名
+            // 二次签名，调起支付需要重新签名
             StringBuilder stringBuilder = new StringBuilder();
             for (Object o : list) {
                 stringBuilder.append(o).append("\n");
@@ -192,7 +211,7 @@ public class WeChatPayUtil {
             signature.update(message);
             String packageSign = Base64.getEncoder().encodeToString(signature.sign());
 
-            //构造数据给微信小程序，用于调起微信支付
+            // 构造数据给微信小程序，用于调起微信支付
             JSONObject jo = new JSONObject();
             jo.put("timeStamp", timeStamp);
             jo.put("nonceStr", nonceStr);
@@ -207,12 +226,14 @@ public class WeChatPayUtil {
 
     /**
      * 申请退款
+     * 调用微信支付退款接口，对指定订单进行退款操作
      *
-     * @param outTradeNo    商户订单号
-     * @param outRefundNo   商户退款单号
-     * @param refund        退款金额
-     * @param total         原订单金额
-     * @return
+     * @param outTradeNo  商户订单号，需与支付时一致
+     * @param outRefundNo 商户退款单号，需保证唯一性
+     * @param refund      退款金额，单位为元，不能超过原订单金额
+     * @param total       原订单金额，单位为元
+     * @return 微信支付返回的JSON响应字符串
+     * @throws Exception 调用接口时可能抛出的异常
      */
     public String refund(String outTradeNo, String outRefundNo, BigDecimal refund, BigDecimal total) throws Exception {
         JSONObject jsonObject = new JSONObject();
@@ -220,6 +241,7 @@ public class WeChatPayUtil {
         jsonObject.put("out_refund_no", outRefundNo);
 
         JSONObject amount = new JSONObject();
+        // 将金额从元转换为分，并四舍五入保留两位小数
         amount.put("refund", refund.multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());
         amount.put("total", total.multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP).intValue());
         amount.put("currency", "CNY");
@@ -229,7 +251,7 @@ public class WeChatPayUtil {
 
         String body = JSON.toJSONString(jsonObject);
 
-        //调用申请退款接口
+        // 调用申请退款接口
         return post(REFUNDS, body);
     }
 }

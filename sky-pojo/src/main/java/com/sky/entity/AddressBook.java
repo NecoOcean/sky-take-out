@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 地址簿
+ * 地址簿实体类
+ * 用于存储用户的地址信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder

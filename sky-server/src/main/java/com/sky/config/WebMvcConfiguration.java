@@ -18,14 +18,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
+    /**
+     * JWT令牌后台管理端拦截器，用于验证请求中的JWT令牌
+     */
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
     /**
      * 注册自定义拦截器
+     * 拦截所有/admin/**路径的请求，排除登录及Swagger相关路径
      *
-     * @param registry
+     * @param registry 拦截器注册器
      */
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
@@ -38,20 +43,23 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 );
     }
 
-    //  Swagger2/Knife4j bean removed; using springdoc-openapi auto configuration
-
-
     /**
      * 设置静态资源映射
-     * @param registry
+     * 当前项目使用springdoc-openapi，无需额外配置静态资源路径
+     *
+     * @param registry 资源处理器注册器
      */
+    @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // springdoc 提供 /swagger-ui/index.html，无需额外静态资源映射
     }
 
     /**
      * 拓展SpringMVC的消息转换器
-     * @param converters
+     * 使用自定义的JacksonObjectMapper作为全局主ObjectMapper，
+     * 统一控制JSON序列化与反序列化行为（如日期格式、空值处理等）
+     *
+     * @return 自定义的ObjectMapper实例
      */
     @Bean
     @Primary

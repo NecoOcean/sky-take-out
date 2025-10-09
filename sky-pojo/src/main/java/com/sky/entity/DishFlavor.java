@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 菜品口味
+ * 菜品口味实体类
+ * 用于存储菜品的口味信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder

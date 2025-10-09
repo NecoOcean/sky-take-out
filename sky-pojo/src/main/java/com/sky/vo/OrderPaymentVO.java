@@ -6,8 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
+/**
+ * 订单支付数据传输对象（VO）
+ * 用于在前端展示订单支付的相关信息，包括随机字符串、签名、时间戳、签名算法和统一下单接口返回的 prepay_id 参数值
+ */
 @Data
 @Builder
 @NoArgsConstructor

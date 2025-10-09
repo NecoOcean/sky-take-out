@@ -8,40 +8,52 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * JWT 工具类
+ * 提供 JWT 的生成与解析功能，采用 HS256 算法进行签名，确保令牌安全性。
+ * 密钥需妥善保管，切勿泄露。
+ */
 public class JwtUtil {
+
     /**
-     * 生成jwt
-     * 使用Hs256算法, 私匙使用固定秘钥
+     * 生成 JWT 令牌
+     * 使用 HS256 算法进行签名，密钥为固定字符串
      *
-     * @param secretKey jwt秘钥
-     * @param ttlMillis jwt过期时间(毫秒)
-     * @param claims    设置的信息
-     * @return
+     * @param secretKey 用于签名的密钥，需保证长度足够且安全
+     * @param ttlMillis 令牌有效期（单位：毫秒）
+     * @param claims    需要封装到 JWT 中的自定义声明信息
+     * @return 生成的 JWT 字符串
      */
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims) {
+        // 指定签名算法
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+        // 计算过期时间
         long expMillis = System.currentTimeMillis() + ttlMillis;
         Date exp = new Date(expMillis);
+
+        // 构建并返回 JWT
         return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(exp)
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), signatureAlgorithm)
-                .compact();
+                .setClaims(claims)          // 设置自定义声明
+                .setExpiration(exp)         // 设置过期时间
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)), signatureAlgorithm) // 设置签名密钥与算法
+                .compact();                 // 生成紧凑的 JWT 字符串
     }
 
     /**
-     * Token解密
+     * 解析 JWT 令牌，提取其中的声明信息
+     * 若令牌无效、过期或签名错误，将抛出异常
      *
-     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
-     * @param token     加密后的token
-     * @return
+     * @param secretKey 用于验证签名的密钥，必须与生成时使用的一致
+     * @param token     待解析的 JWT 字符串
+     * @return 解析后的 Claims 对象，包含令牌中的声明信息
      */
     public static Claims parseJWT(String secretKey, String token) {
+        // 使用密钥构建解析器
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8))) // 设置验证签名的密钥
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseClaimsJws(token)    // 解析并验证令牌
+                .getBody();               // 获取载荷部分
     }
-
 }

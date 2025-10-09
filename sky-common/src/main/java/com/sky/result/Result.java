@@ -5,22 +5,44 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 后端统一返回结果
- * @param <T>
+ * 后端统一返回结果封装类
+ * @param <T> 返回数据的类型
  */
 @Data
 public class Result<T> implements Serializable {
 
-    private Integer code; //编码：1成功，0和其它数字为失败
-    private String msg; //错误信息
-    private T data; //数据
+    /**
+     * 响应编码：1表示成功，0及其他数字表示失败
+     */
+    private Integer code;
 
+    /**
+     * 响应提示信息
+     */
+    private String msg;
+
+    /**
+     * 响应数据
+     */
+    private T data;
+
+    /**
+     * 无参成功响应构造方法
+     * @param <T> 数据类型
+     * @return 成功结果对象，code=1
+     */
     public static <T> Result<T> success() {
         Result<T> result = new Result<T>();
         result.code = 1;
         return result;
     }
 
+    /**
+     * 带数据的成功响应构造方法
+     * @param object 返回的数据对象
+     * @param <T> 数据类型
+     * @return 成功结果对象，code=1，data=object
+     */
     public static <T> Result<T> success(T object) {
         Result<T> result = new Result<T>();
         result.data = object;
@@ -28,6 +50,12 @@ public class Result<T> implements Serializable {
         return result;
     }
 
+    /**
+     * 失败响应构造方法
+     * @param msg 错误提示信息
+     * @param <T> 数据类型
+     * @return 失败结果对象，code=0，msg=msg
+     */
     public static <T> Result<T> error(String msg) {
         Result result = new Result();
         result.msg = msg;

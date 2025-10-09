@@ -6,6 +6,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 订单分页查询数据传输对象（DTO）
+ * 用于在前端分页查询订单列表时传递查询条件，支持按订单号、手机号、订单状态、时间范围等筛选
+ */
 @Data
 public class OrdersPageQueryDTO implements Serializable {
 

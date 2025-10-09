@@ -6,8 +6,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 员工登录
- *
+ * 员工登录数据传输对象（DTO）
+ * 用于在前端与后端之间传递员工登录相关数据，支持用户名密码登录
  */
 @Data
 @Schema(description = "员工登录时传递的数据模型")

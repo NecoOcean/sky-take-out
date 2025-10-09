@@ -12,7 +12,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 订单明细
+ * 订单明细实体类
+ * 用于存储订单的详细信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder

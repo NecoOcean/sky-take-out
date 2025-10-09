@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 套餐总览
+ * 套餐总览数据传输对象（VO）
+ * 用于在前端展示套餐的总览信息，包括已启售数量和已停售数量
  */
 @Data
 @Builder

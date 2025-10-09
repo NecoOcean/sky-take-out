@@ -2,37 +2,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- 父模块坐标：sky-take-out -->
     <parent>
         <artifactId>sky-take-out</artifactId>
         <groupId>com.sky</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
+    <!-- 当前模块基本信息 -->
     <modelVersion>4.0.0</modelVersion>
+    <!-- sky-pojo：存放所有实体类（Entity）、DTO、VO、枚举等公共模型定义 -->
     <artifactId>sky-pojo</artifactId>
+
+    <!-- 模块依赖声明 -->
     <dependencies>
+        <!-- Lombok：通过注解简化 POJO 的 getter/setter、toString、构造器等样板代码 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
+        <!-- Jackson：提供 JSON 序列化/反序列化能力，用于 RESTful API 数据转换 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-        <!-- Swagger2/Knife4j removed; using springdoc in server module -->
 
-        <!-- Swagger v3 annotations used by DTO/VO classes -->
+        <!-- Swagger v3 注解：为 DTO/VO 类提供接口文档元数据，支持 OpenAPI 3 规范 -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>2.2.36</version>
         </dependency>
 
-        <!-- Spring format annotations (DateTimeFormat) -->
+        <!-- Spring Context：提供 @DateTimeFormat 等格式化注解，用于接收前端日期参数 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
         </dependency>
 
+        <!-- MyBatis-Plus Spring Boot 3 启动器：提供通用 Mapper、分页、条件构造器等功能，简化 DAO 层开发 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>

@@ -22,18 +22,33 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+/**
+ * 员工业务层实现类
+ * 负责员工登录、新增、分页查询、状态更新、编辑及详情查询等核心业务逻辑
+ */
 @Service
 @Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
 
+    /**
+     * 员工数据访问层接口
+     */
     @Resource
     private EmployeeMapper employeeMapper;
 
     /**
      * 员工登录
+     * <p>
+     * 1. 根据用户名查询数据库<br>
+     * 2. 校验密码：支持 BCrypt 哈希，兼容旧明文密码并自动迁移<br>
+     * 3. 校验账号状态（是否被锁定）<br>
+     * 4. 返回员工实体
      *
-     * @param employeeLoginDTO 员工登录数据集合体
-     * @return 员工信息
+     * @param employeeLoginDTO 员工登录数据传输对象（包含用户名、密码）
+     * @return 数据库中完整的员工实体
+     * @throws AccountNotFoundException 用户名不存在
+     * @throws PasswordErrorException   密码错误
+     * @throws AccountLockedException   账号被禁用
      */
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
@@ -86,8 +101,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 新增员工
+     * <p>
+     * 1. 设置默认启用状态<br>
+     * 2. 默认密码"123456"并使用 BCrypt 加密<br>
+     * 3. 审计字段由 MyBatis-Plus 自动填充
      *
-     * @param employeeDTO 新增员工数据
+     * @param employeeDTO 新增员工数据传输对象
      */
     @Override
     public void addEmployee(EmployeeDTO employeeDTO) {
@@ -114,11 +133,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 员工分页查询
-     * 支持根据姓名模糊查询
-     * Path: /admin/employee/page
-     * Method: GET
-     * @param queryDTO 分页查询参数
-     * @return 分页结果
+     * <p>
+     * 支持根据姓名模糊查询，并按更新时间倒序排序
+     *
+     * @param queryDTO 分页查询参数（页码、每页条数、姓名关键字）
+     * @return 统一分页结果（总记录数、当前页数据）
      */
     @Override
     public PageResult page(EmployeePageQueryDTO queryDTO) {
@@ -151,8 +170,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 更新员工账号状态（启用/禁用）
-     * @param id 员工ID
-     * @param status 状态，1为启用，0为禁用
+     * <p>
+     * 仅更新状态字段，其余字段不受影响；审计字段由 MyBatis-Plus 自动填充
+     *
+     * @param id     员工主键 ID
+     * @param status 目标状态：1-启用，0-禁用
+     * @throws IllegalArgumentException 参数非法（空 ID 或状态值不是 0/1）
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -176,9 +199,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 对密码进行加密
+     * 对密码进行 BCrypt 加密
+     * <p>
+     * 使用工作因子 12，兼顾安全性与性能
+     *
      * @param plainPassword 明文密码
-     * @return 加密后的哈希字符串
+     * @return BCrypt 哈希字符串
      */
     private static String encryptPassword(String plainPassword) {
         // 生成盐并进行哈希。12是工作因子（work factor），决定了计算的复杂度。
@@ -189,10 +215,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 验证密码是否匹配
-     * @param plainPassword 待验证的明文密码
-     * @param hashedPassword 数据库中存储的哈希密码
-     * @return 如果匹配返回 true，否则返回 false
+     * 验证明文密码与 BCrypt 哈希是否匹配
+     *
+     * @param plainPassword  明文密码
+     * @param hashedPassword BCrypt 哈希（必须以 $2a$ 开头）
+     * @return 匹配返回 true，否则 false
+     * @throws IllegalArgumentException 哈希格式非法
      */
     private static boolean checkPassword(String plainPassword, String hashedPassword) {
         // BCrypt.checkpw 会自动从 hashedPassword 中提取盐，并使用相同的算法进行验证。
@@ -203,9 +231,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 编辑员工信息
-     * 仅允许编辑：username、name、phone、sex、idNumber
-     * 不修改：password、status、createTime、createUser 等
+     * 编辑员工基本信息
+     * <p>
+     * 仅允许编辑：username、name、phone、sex、idNumber<br>
+     * 不修改：password、status、createTime、createUser 等<br>
+     * 审计字段由 MyBatis-Plus 自动填充
+     *
+     * @param employeeDTO 员工编辑数据传输对象（必须包含主键 ID）
+     * @throws IllegalArgumentException ID 为空
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -226,9 +259,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 根据ID查询员工详情（脱敏密码）
-     * @param id 员工ID
-     * @return 员工详情
+     * 根据主键 ID 查询员工详情
+     * <p>
+     * 返回结果已脱敏：密码字段置空
+     *
+     * @param id 员工主键 ID
+     * @return 员工实体（密码已清空）
+     * @throws IllegalArgumentException ID 为空
      */
     @Override
     public Employee getById(Long id) {

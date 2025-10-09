@@ -24,28 +24,49 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
  */
 public class JacksonObjectMapper extends ObjectMapper {
 
+    /**
+     * 默认日期格式：yyyy-MM-dd
+     */
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-    //public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * 默认日期时间格式：yyyy-MM-dd HH:mm
+     */
     public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+
+    /**
+     * 默认时间格式：HH:mm:ss
+     */
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
 
+    /**
+     * 构造方法，初始化JacksonObjectMapper实例
+     * 配置序列化与反序列化规则，注册Java 8时间类型模块
+     */
     public JacksonObjectMapper() {
         super();
-        //收到未知属性时不报异常
+        // 收到未知属性时不报异常
         this.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        //反序列化时，属性不存在的兼容处理
+        // 反序列化时，属性不存在的兼容处理
         this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+        // 创建SimpleModule，注册Java 8时间类型的序列化器与反序列化器
         SimpleModule simpleModule = new SimpleModule()
+                // 注册LocalDateTime类型的反序列化器
                 .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
+                // 注册LocalDate类型的反序列化器
                 .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
+                // 注册LocalTime类型的反序列化器
                 .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))
+                // 注册LocalDateTime类型的序列化器
                 .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
+                // 注册LocalDate类型的序列化器
                 .addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
+                // 注册LocalTime类型的序列化器
                 .addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));
 
-        //注册功能模块 例如，可以添加自定义序列化器和反序列化器
+        // 注册功能模块 例如，可以添加自定义序列化器和反序列化器
         this.registerModule(simpleModule);
     }
 }

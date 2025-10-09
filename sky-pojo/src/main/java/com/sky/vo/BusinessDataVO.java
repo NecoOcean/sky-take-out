@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 数据概览
+ * 数据概览数据传输对象（VO）
+ * 用于在前端展示数据概览信息，包括营业额、有效订单数、订单完成率、平均客单价和新增用户数
  */
 @Data
 @Builder

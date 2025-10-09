@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 菜品及套餐分类实体类
+ * 用于存储菜品和套餐的分类信息，支持新增、修改、查询等操作
+ */
 @Data
 @Builder
 @NoArgsConstructor

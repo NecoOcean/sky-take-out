@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sky.mapper.DishFlavorMapper">
+
+    <!-- 批量插入菜品口味 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO dish_flavor (dish_id, name, value) VALUES
+        <foreach collection="list" item="flavor" separator=",">
+            (#{flavor.dishId}, #{flavor.name}, #{flavor.value})
+        </foreach>
+    </insert>
+
+    <!--
+  根据菜品ID列表批量删除口味
+  collection: 要遍历的集合，这里是方法参数中的 List<Long> dishIds
+  item: 遍历集合时的每个元素的别名，这里我们用 dishId
+  open: 整个循环体开始前的字符串
+  separator: 每次循环之间的分隔符
+  close: 整个循环体结束后的字符串
+-->
+    <delete id="deleteByDishIds">
+        DELETE FROM dish_flavor
+        WHERE dish_id IN
+        <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
+            #{dishId}
+        </foreach>
+    </delete>
+
+</mapper>

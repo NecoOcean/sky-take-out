@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 套餐数据传输对象（VO）
+ * 用于在前端展示套餐的详细信息，包括套餐基本信息、套餐菜品信息和套餐描述等
+ */
 @Data
 @Builder
 @NoArgsConstructor

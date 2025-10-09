@@ -24,6 +24,9 @@ import java.util.List;
 @Slf4j
 public class CategoryController {
 
+    /**
+     * 分类业务逻辑服务
+     */
     @Resource
     private CategoryService categoryService;
 

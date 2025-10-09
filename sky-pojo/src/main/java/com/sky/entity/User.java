@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 用户实体类
+ * 用于存储用户信息，支持新增、修改、查询等操作
+ */
 @Data
 @Builder
 @NoArgsConstructor

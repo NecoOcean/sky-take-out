@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * 员工实体类
+ * 用于存储员工信息，支持新增、修改、查询等操作
+ */
 @Data
 @Builder
 @NoArgsConstructor

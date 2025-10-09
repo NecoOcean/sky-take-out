@@ -4,6 +4,10 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * 分类数据传输对象（DTO）
+ * 用于在前端与后端之间传递分类相关数据，支持新增、修改、查询等操作
+ */
 @Data
 public class CategoryDTO implements Serializable {
 

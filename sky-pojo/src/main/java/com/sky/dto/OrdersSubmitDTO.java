@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * 订单提交数据传输对象（DTO）
+ * 用于在前端提交订单时传递订单相关数据，支持新增、修改、查询等操作
+ */
 @Data
 public class OrdersSubmitDTO implements Serializable {
     //地址簿id

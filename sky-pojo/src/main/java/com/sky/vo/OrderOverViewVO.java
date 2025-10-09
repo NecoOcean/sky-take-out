@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 订单概览数据
+ * 订单概览数据传输对象（VO）
+ * 用于在前端展示订单的总览信息，包括待接单数量、待派送数量、已完成数量、已取消数量和全部订单数量
  */
 @Data
 @Builder

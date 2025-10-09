@@ -12,7 +12,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 套餐菜品关系
+ * 套餐菜品关系实体类
+ * 用于存储套餐与菜品的关联关系，支持新增、修改、查询等操作
  */
 @Data
 @Builder

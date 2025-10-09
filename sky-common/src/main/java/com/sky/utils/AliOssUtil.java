@@ -9,50 +9,67 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayInputStream;
 
+/**
+ * 阿里云OSS工具类
+ * 用于实现文件上传至阿里云对象存储服务
+ *
+ * @author sky
+ */
 @Data
 @AllArgsConstructor
 @Slf4j
 public class AliOssUtil {
 
+    /**
+     * OSS接入点（地域节点）
+     */
     private String endpoint;
+
+    /**
+     * 阿里云账号AccessKey ID
+     */
     private String accessKeyId;
+
+    /**
+     * 阿里云账号AccessKey Secret
+     */
     private String accessKeySecret;
+
+    /**
+     * OSS存储空间名称
+     */
     private String bucketName;
 
     /**
-     * 文件上传
+     * 上传文件至阿里云OSS
      *
-     * @param bytes
-     * @param objectName
-     * @return
+     * @param bytes      文件字节数组
+     * @param objectName 文件在OSS中的存储路径及名称（例如：images/avatar/123.jpg）
+     * @return 文件在OSS上的访问URL，格式：https://BucketName.Endpoint/ObjectName
      */
     public String upload(byte[] bytes, String objectName) {
 
-        // 创建OSSClient实例。
+        // 创建OSSClient实例
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
 
         try {
-            // 创建PutObject请求。
+            // 上传文件至指定bucket及路径
             ossClient.putObject(bucketName, objectName, new ByteArrayInputStream(bytes));
         } catch (OSSException oe) {
-            System.out.println("Caught an OSSException, which means your request made it to OSS, "
-                    + "but was rejected with an error response for some reason.");
-            System.out.println("Error Message:" + oe.getErrorMessage());
-            System.out.println("Error Code:" + oe.getErrorCode());
-            System.out.println("Request ID:" + oe.getRequestId());
-            System.out.println("Host ID:" + oe.getHostId());
+            // OSS服务端异常
+            log.error("OSS服务端异常: 错误信息={}, 错误码={}, 请求ID={}, 主机ID={}",
+                    oe.getErrorMessage(), oe.getErrorCode(), oe.getRequestId(), oe.getHostId());
         } catch (ClientException ce) {
-            System.out.println("Caught an ClientException, which means the client encountered "
-                    + "a serious internal problem while trying to communicate with OSS, "
-                    + "such as not being able to access the network.");
-            System.out.println("Error Message:" + ce.getMessage());
+            // 客户端异常，如网络问题
+            log.error("OSS客户端异常: 错误信息={}", ce.getMessage());
         } finally {
+            // 关闭OSSClient，释放资源
             if (ossClient != null) {
                 ossClient.shutdown();
             }
         }
 
-        //文件访问路径规则 https://BucketName.Endpoint/ObjectName
+        // 拼接并返回文件访问URL
         StringBuilder stringBuilder = new StringBuilder("https://");
         stringBuilder
                 .append(bucketName)
@@ -61,7 +78,7 @@ public class AliOssUtil {
                 .append("/")
                 .append(objectName);
 
-        log.info("文件上传到:{}", stringBuilder.toString());
+        log.info("文件已成功上传至: {}", stringBuilder.toString());
 
         return stringBuilder.toString();
     }

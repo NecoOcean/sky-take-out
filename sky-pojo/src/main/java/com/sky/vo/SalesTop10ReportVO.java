@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * 销售Top10数据传输对象（VO）
+ * 用于在前端展示销售Top10的商品名称和销量信息
+ */
 @Data
 @Builder
 @NoArgsConstructor

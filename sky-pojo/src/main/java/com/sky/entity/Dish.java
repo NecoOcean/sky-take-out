@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 菜品
+ * 菜品实体类
+ * 用于存储菜品信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder

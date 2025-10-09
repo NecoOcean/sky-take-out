@@ -1,0 +1,23 @@
+package com.sky.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sky.entity.SetmealDish;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+/**
+ * 套餐菜品Mapper接口
+ * 用于数据库操作套餐菜品相关数据
+ */
+@Mapper
+public interface SetmealDishMapper extends BaseMapper<SetmealDish> {
+    /**
+     * 根据菜品id查询对应的套餐id
+     *
+     * @param dishIds 菜品id列表，不可为null或空
+     * @return 包含对应套餐id的列表，若未找到则返回空列表
+     */
+    //select setmeal_id from setmeal_dish where dish_id in (1,2,3,4)
+    List<Long> getSetmealIdsByDishIds(List<Long> dishIds);
+}

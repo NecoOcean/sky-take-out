@@ -13,7 +13,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 订单
+ * 订单实体类
+ * 用于存储订单信息，支持新增、修改、查询等操作
  */
 @Data
 @Builder
