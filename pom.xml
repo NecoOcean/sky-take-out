@@ -20,7 +20,7 @@
     <properties>
         <java.version>17</java.version>
         <mybatis.spring>3.0.3</mybatis.spring>
-        <mybatis.plus>3.5.6</mybatis.plus>
+        <mybatis.plus>3.5.14</mybatis.plus>
         <lombok>1.18.30</lombok>
         <fastjson>2.0.52</fastjson>
         <druid>1.2.21</druid>
@@ -40,6 +40,12 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis.plus}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-jsqlparser -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
                 <version>${mybatis.plus}</version>
             </dependency>
 

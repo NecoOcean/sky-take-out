@@ -16,7 +16,6 @@ import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -66,10 +65,10 @@ public class CategoryServiceImpl implements CategoryService {
         // 构造查询条件
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(categoryPageQueryDTO.getType() != null, Category::getType, categoryPageQueryDTO.getType())
-                    .like(categoryPageQueryDTO.getName() != null, Category::getName, categoryPageQueryDTO.getName())
-                    // 排序：按sort升序，更新时间降序作为次序
-                    .orderByAsc(Category::getSort)
-                    .orderByDesc(Category::getUpdateTime);
+                .like(categoryPageQueryDTO.getName() != null, Category::getName, categoryPageQueryDTO.getName())
+                // 排序：按sort升序，更新时间降序作为次序
+                .orderByAsc(Category::getSort)
+                .orderByDesc(Category::getUpdateTime);
         // 执行分页查询
         Page<Category> resultPage = categoryMapper.selectPage(page, queryWrapper);
         // 封装返回结果
@@ -141,8 +140,8 @@ public class CategoryServiceImpl implements CategoryService {
     public List<Category> list(Integer type) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getType, type)
-                    .orderByAsc(Category::getSort)
-                    .orderByDesc(Category::getUpdateTime);
+                .orderByAsc(Category::getSort)
+                .orderByDesc(Category::getUpdateTime);
         return categoryMapper.selectList(queryWrapper);
     }
 }

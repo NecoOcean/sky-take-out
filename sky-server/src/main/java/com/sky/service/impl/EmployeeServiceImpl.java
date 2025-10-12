@@ -12,13 +12,13 @@ import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
-import com.sky.service.EmployeeService;
 import com.sky.result.PageResult;
-import org.springframework.transaction.annotation.Transactional;
+import com.sky.service.EmployeeService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -35,6 +35,38 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Resource
     private EmployeeMapper employeeMapper;
+
+    /**
+     * 对密码进行 BCrypt 加密
+     * <p>
+     * 使用工作因子 12，兼顾安全性与性能
+     *
+     * @param plainPassword 明文密码
+     * @return BCrypt 哈希字符串
+     */
+    private static String encryptPassword(String plainPassword) {
+        // 生成盐并进行哈希。12是工作因子（work factor），决定了计算的复杂度。
+        // 工作因子越高，哈希越慢，安全性也越高，但消耗的CPU资源也越多。
+        // 通常在 10-14 之间选择一个平衡点。
+        int workFactor = 12;
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(workFactor));
+    }
+
+    /**
+     * 验证明文密码与 BCrypt 哈希是否匹配
+     *
+     * @param plainPassword  明文密码
+     * @param hashedPassword BCrypt 哈希（必须以 $2a$ 开头）
+     * @return 匹配返回 true，否则 false
+     * @throws IllegalArgumentException 哈希格式非法
+     */
+    private static boolean checkPassword(String plainPassword, String hashedPassword) {
+        // BCrypt.checkpw 会自动从 hashedPassword 中提取盐，并使用相同的算法进行验证。
+        if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
+            throw new IllegalArgumentException("Invalid hash provided for comparison");
+        }
+        return BCrypt.checkpw(plainPassword, hashedPassword);
+    }
 
     /**
      * 员工登录
@@ -196,38 +228,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 审计字段不再手动赋值，依赖 MyBatis-Plus 自动填充
 
         employeeMapper.updateById(toUpdate);
-    }
-
-    /**
-     * 对密码进行 BCrypt 加密
-     * <p>
-     * 使用工作因子 12，兼顾安全性与性能
-     *
-     * @param plainPassword 明文密码
-     * @return BCrypt 哈希字符串
-     */
-    private static String encryptPassword(String plainPassword) {
-        // 生成盐并进行哈希。12是工作因子（work factor），决定了计算的复杂度。
-        // 工作因子越高，哈希越慢，安全性也越高，但消耗的CPU资源也越多。
-        // 通常在 10-14 之间选择一个平衡点。
-        int workFactor = 12;
-        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(workFactor));
-    }
-
-    /**
-     * 验证明文密码与 BCrypt 哈希是否匹配
-     *
-     * @param plainPassword  明文密码
-     * @param hashedPassword BCrypt 哈希（必须以 $2a$ 开头）
-     * @return 匹配返回 true，否则 false
-     * @throws IllegalArgumentException 哈希格式非法
-     */
-    private static boolean checkPassword(String plainPassword, String hashedPassword) {
-        // BCrypt.checkpw 会自动从 hashedPassword 中提取盐，并使用相同的算法进行验证。
-        if (hashedPassword == null || !hashedPassword.startsWith("$2a$")) {
-            throw new IllegalArgumentException("Invalid hash provided for comparison");
-        }
-        return BCrypt.checkpw(plainPassword, hashedPassword);
     }
 
     /**

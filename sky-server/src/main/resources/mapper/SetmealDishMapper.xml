@@ -17,4 +17,11 @@
             (#{sd.setmealId},#{sd.dishId},#{sd.name},#{sd.price},#{sd.copies})
         </foreach>
     </insert>
+
+    <select id="listBySetmealId" parameterType="long" resultType="com.sky.entity.SetmealDish">
+        select id, setmeal_id, dish_id, name, price, copies
+        from setmeal_dish
+        where setmeal_id = #{setmealId}
+        order by id asc
+    </select>
 </mapper>

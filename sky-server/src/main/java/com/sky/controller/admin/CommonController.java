@@ -4,6 +4,7 @@ import com.sky.constant.MessageConstant;
 import com.sky.result.Result;
 import com.sky.utils.AliOssUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/admin/common")
-@Tag(name = "通用接口")
+@Tag(name = "通用接口", description = "后台管理系统通用功能接口，目前主要提供文件上传服务")
 @Slf4j
 public class CommonController {
 
@@ -36,14 +37,21 @@ public class CommonController {
     /**
      * 文件上传接口
      * 接收前端上传的文件，保存至阿里云OSS，并返回可访问的文件路径
+     * 支持常见图片格式（如jpg、png、jpeg等），文件大小由全局配置限制
      *
-     * @param file 前端上传的文件对象，不能为空
+     * @param file 前端上传的文件对象，不能为空，需为图片格式
      * @return Result<String> 包含上传成功后文件访问路径的成功响应，或上传失败的错误响应
      */
     @PostMapping("/upload")
-    @Operation(summary = "文件上传")
-    public Result<String> upload(MultipartFile file) {
-        log.info("文件上传：{}", file);
+    @Operation(
+            summary = "文件上传",
+            description = "上传图片文件到阿里云OSS，返回可访问的URL路径。支持jpg、png、jpeg等常见格式。"
+    )
+    public Result<String> upload(
+            @Parameter(description = "待上传的图片文件", required = true)
+            MultipartFile file
+    ) {
+        log.info("文件上传：原始文件名={}", file.getOriginalFilename());
 
         try {
             // 获取原始文件名，用于截取文件后缀
@@ -59,7 +67,7 @@ public class CommonController {
             return Result.success(filePath);
         } catch (IOException e) {
             // 记录文件上传失败的异常信息
-            log.error("文件上传失败:", e);
+            log.error("文件上传失败，原始文件名：{}", file.getOriginalFilename(), e);
         }
 
         // 返回上传失败的错误响应

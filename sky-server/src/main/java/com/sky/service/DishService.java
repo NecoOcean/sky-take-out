@@ -1,15 +1,14 @@
 package com.sky.service;
 
-import java.util.List;
-
+import com.sky.dto.DishDTO;
+import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.result.PageResult;
 import com.sky.vo.DishVO;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sky.dto.DishDTO;
-import com.sky.dto.DishPageQueryDTO;
-import com.sky.result.PageResult;
+import java.util.List;
 
 /**
  * 菜品业务接口
@@ -56,11 +55,11 @@ public interface DishService {
      * <p>
      * 1. 前置校验：若待删除 ID 列表为空，则直接返回，不做任何处理；<br>
      * 2. 业务校验：
-     *    a) 判断待删除菜品中是否存在“起售中”状态，若存在则抛出 {@link DeletionNotAllowedException}；<br>
-     *    b) 判断待删除菜品是否已被任何套餐引用，若存在引用则同样抛出 {@link DeletionNotAllowedException}；<br>
+     * a) 判断待删除菜品中是否存在“起售中”状态，若存在则抛出 {@link DeletionNotAllowedException}；<br>
+     * b) 判断待删除菜品是否已被任何套餐引用，若存在引用则同样抛出 {@link DeletionNotAllowedException}；<br>
      * 3. 级联删除：
-     *    a) 先删除菜品口味子表数据，避免外键约束冲突；<br>
-     *    b) 再删除菜品主表数据；<br>
+     * a) 先删除菜品口味子表数据，避免外键约束冲突；<br>
+     * b) 再删除菜品主表数据；<br>
      * 4. 全程采用批量操作，减少数据库交互次数，提升性能。
      * </p>
      *

@@ -3,6 +3,7 @@ package com.sky.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.entity.SetmealDish;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -20,4 +21,13 @@ public interface SetmealDishMapper extends BaseMapper<SetmealDish> {
      */
     //select setmeal_id from setmeal_dish where dish_id in (1,2,3,4)
     List<Long> getSetmealIdsByDishIds(List<Long> dishIds);
+
+    /**
+     * 根据套餐ID查询该套餐下的菜品列表
+     *
+     * @param setmealId 套餐ID
+     * @return 套餐菜品列表
+     */
+    List<SetmealDish> listBySetmealId(@Param("setmealId") Long setmealId);
+
 }

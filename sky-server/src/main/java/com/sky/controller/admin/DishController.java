@@ -8,13 +8,14 @@ import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
 
 /**
  * 菜品管理控制器
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/dish")
 @Slf4j
-@Tag(name = "菜品相关接口")
+@Tag(name = "菜品相关接口", description = "提供菜品新增、分页查询、批量删除、根据ID查询、修改、起售/停售、根据分类ID查询等功能")
 public class DishController {
 
     @Resource
@@ -35,9 +36,11 @@ public class DishController {
      * @param dishDTO 菜品及口味数据传输对象
      * @return 成功响应
      */
-    @Operation(summary = "新增菜品")
+    @Operation(summary = "新增菜品",
+            description = "管理员端新增菜品，支持同时录入口味信息，保存后菜品默认状态为停售")
     @PostMapping
-    public Result<String> saveWithFlavor(@RequestBody DishDTO dishDTO) {
+    public Result<String> saveWithFlavor(@Parameter(description = "菜品及口味信息", required = true)
+                                         @RequestBody DishDTO dishDTO) {
         log.info("新增菜品:{}", dishDTO);
         dishService.saveWithFlavor(dishDTO);
         return Result.success();
@@ -50,8 +53,10 @@ public class DishController {
      * @return 分页结果封装对象
      */
     @GetMapping("/page")
-    @Operation(summary = "菜品分页查询")
-    public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
+    @Operation(summary = "菜品分页查询",
+            description = "支持根据分类、名称、状态等条件分页查询菜品列表，返回包含口味信息的分页数据")
+    public Result<PageResult> page(@Parameter(description = "分页查询参数", required = false)
+                                   DishPageQueryDTO dishPageQueryDTO) {
         log.info("菜品分页查询:{}", dishPageQueryDTO);
         PageResult pageResult = dishService.pageQuery(dishPageQueryDTO);
         return Result.success(pageResult);
@@ -65,8 +70,10 @@ public class DishController {
      * @return 成功响应
      */
     @DeleteMapping
-    @Operation(summary = "菜品批量删除")
-    public Result delete(@RequestParam List<Long> ids) {
+    @Operation(summary = "菜品批量删除",
+            description = "根据菜品ID列表批量删除菜品，若菜品存在关联订单则无法删除")
+    public Result delete(@Parameter(description = "菜品ID列表", required = true, in = ParameterIn.QUERY)
+                         @RequestParam List<Long> ids) {
         log.info("菜品批量删除：{}", ids);
         dishService.deleteBatch(ids);
 
@@ -83,8 +90,10 @@ public class DishController {
      * @return 菜品及口味视图对象
      */
     @GetMapping("/{id}")
-    @Operation(summary = "根据id查询菜品")
-    public Result<DishVO> getById(@PathVariable Long id) {
+    @Operation(summary = "根据id查询菜品",
+            description = "根据菜品ID查询菜品基本信息及对应口味列表")
+    public Result<DishVO> getById(@Parameter(description = "菜品ID", required = true, in = ParameterIn.PATH)
+                                  @PathVariable Long id) {
         log.info("根据id查询菜品：{}", id);
         DishVO dishVO = dishService.getByIdWithFlavor(id);
         return Result.success(dishVO);
@@ -97,8 +106,10 @@ public class DishController {
      * @return 成功响应
      */
     @PutMapping
-    @Operation(summary = "修改菜品")
-    public Result update(@RequestBody DishDTO dishDTO) {
+    @Operation(summary = "修改菜品",
+            description = "管理员端修改菜品基本信息及口味信息，修改后需重新审核")
+    public Result update(@Parameter(description = "菜品及口味信息", required = true)
+                         @RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
         dishService.updateWithFlavor(dishDTO);
 
@@ -117,8 +128,12 @@ public class DishController {
      * @return 成功响应
      */
     @PostMapping("/status/{status}")
-    @Operation(summary = "菜品起售停售")
-    public Result<String> startOrStop(@PathVariable Integer status, Long id) {
+    @Operation(summary = "菜品起售停售",
+            description = "切换菜品销售状态，起售后用户端可见，停售后用户端隐藏")
+    public Result<String> startOrStop(@Parameter(description = "目标状态 1-起售 0-停售", required = true, in = ParameterIn.PATH)
+                                      @PathVariable Integer status,
+                                      @Parameter(description = "菜品ID", required = true, in = ParameterIn.QUERY)
+                                      Long id) {
         dishService.startOrStop(status, id);
 
         //将所有的菜品缓存数据清理掉，所有以dish_开头的key
@@ -135,8 +150,10 @@ public class DishController {
      * @return 菜品实体列表
      */
     @GetMapping("/list")
-    @Operation(summary = "根据分类id查询菜品")
-    public Result<List<Dish>> list(Long categoryId) {
+    @Operation(summary = "根据分类id查询菜品",
+            description = "根据分类ID查询该分类下所有菜品，用于后台快速筛选")
+    public Result<List<Dish>> list(@Parameter(description = "分类ID", required = true, in = ParameterIn.QUERY)
+                                   Long categoryId) {
         List<Dish> list = dishService.list(categoryId);
         return Result.success(list);
     }

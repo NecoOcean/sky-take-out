@@ -15,6 +15,7 @@ import java.util.List;
 public interface DishFlavorMapper extends BaseMapper<DishFlavor> {
     /**
      * 批量插入菜品口味
+     *
      * @param flavorList 菜品口味列表
      * @return 插入成功的条数
      */
