@@ -11,6 +11,10 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
  * 全局异常处理器，统一处理项目中抛出的各类异常
+ * 主要负责捕获并处理控制器层抛出的异常，返回统一的响应结果
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @RestControllerAdvice
 @Slf4j

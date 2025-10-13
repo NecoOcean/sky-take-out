@@ -23,18 +23,30 @@ import java.util.List;
 
 /**
  * 分类业务接口实现类
- * 负责处理菜品分类和套餐分类的增删改查及状态管理
+ * 负责处理菜品分类和套餐分类的增删改查及状态管理。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @Service
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
-
+    
+    /**
+     * 分类映射器，用于数据库操作
+     */
     @Resource
     CategoryMapper categoryMapper;
 
+    /**
+     * 菜品映射器，用于数据库操作
+     */
     @Resource
     DishMapper dishMapper;
 
+    /**
+     * 套餐映射器，用于数据库操作
+     */
     @Resource
     SetmealMapper setmealMapper;
 

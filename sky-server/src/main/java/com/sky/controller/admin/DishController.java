@@ -19,7 +19,11 @@ import java.util.List;
 
 /**
  * 菜品管理控制器
- * 提供菜品新增、分页查询、批量删除、根据ID查询、修改、起售/停售、根据分类ID查询等功能
+ * 提供菜品新增、分页查询、批量删除、根据ID查询、修改、起售/停售、根据分类ID查询等功能。
+ * 主要负责处理前端发送的菜品相关请求，调用服务层进行业务逻辑处理，并返回结果。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @RestController
 @RequestMapping("/admin/dish")

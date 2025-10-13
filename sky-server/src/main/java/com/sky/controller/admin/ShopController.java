@@ -18,6 +18,10 @@ import java.util.Objects;
 /**
  * 店铺相关接口
  * 管理员端接口，用于设置与获取店铺的营业状态。
+ * 主要负责处理前端发送的店铺相关请求，调用服务层进行业务逻辑处理，并返回结果。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @RestController("adminShopController")
 @RequestMapping("/admin/shop")

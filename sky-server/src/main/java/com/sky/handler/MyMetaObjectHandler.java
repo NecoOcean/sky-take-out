@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 /**
  * MyBatis-Plus 自动填充处理器
  * 用于在插入和更新操作时自动填充审计字段（创建人、创建时间、更新人、更新时间）
+ * 主要负责在数据库操作中自动添加或更新相关字段，确保数据的一致性和完整性
  *
  * @author NecoOcean
  * @date 2025/10/10

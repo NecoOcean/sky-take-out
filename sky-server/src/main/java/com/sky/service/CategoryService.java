@@ -9,7 +9,10 @@ import java.util.List;
 
 /**
  * 分类业务接口
- * 提供菜品及套餐分类的增删改查、启禁用等核心业务能力
+ * 提供菜品及套餐分类的增删改查、启禁用等核心业务能力，支持批量操作。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 public interface CategoryService {
 

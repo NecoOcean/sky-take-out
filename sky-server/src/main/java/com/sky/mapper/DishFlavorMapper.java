@@ -9,7 +9,11 @@ import java.util.List;
 
 /**
  * 菜品口味Mapper接口
- * 用于数据库操作菜品口味相关数据
+ * 用于数据库操作菜品口味相关数据，继承自MyBatis-Plus的BaseMapper。
+ * 主要负责对菜品口味的增删改查操作。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @Mapper
 public interface DishFlavorMapper extends BaseMapper<DishFlavor> {

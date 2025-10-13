@@ -9,7 +9,11 @@ import java.util.List;
 
 /**
  * 套餐菜品Mapper接口
- * 用于数据库操作套餐菜品相关数据
+ * 用于数据库操作套餐菜品相关数据，继承自MyBatis-Plus的BaseMapper。
+ * 主要负责对套餐菜品的增删改查操作。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @Mapper
 public interface SetmealDishMapper extends BaseMapper<SetmealDish> {

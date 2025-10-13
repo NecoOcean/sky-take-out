@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Configuration;
  * 方便前后端开发人员在线查看和调试接口。
  * </p>
  *
- * @author sky
- * @date 2024/06/01
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @Configuration
 public class OpenApiConfig {

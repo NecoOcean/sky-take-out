@@ -6,7 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 员工Mapper接口
- * 用于数据库操作员工相关数据
+ * 用于数据库操作员工相关数据，继承自MyBatis-Plus的BaseMapper。
+ * 主要负责对员工的增删改查操作。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @Mapper
 public interface EmployeeMapper extends BaseMapper<Employee> {

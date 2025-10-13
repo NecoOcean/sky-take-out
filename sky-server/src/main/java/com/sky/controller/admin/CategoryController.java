@@ -17,7 +17,11 @@ import java.util.List;
 
 /**
  * 后台分类管理控制器
- * 提供分类的增删改查、启用禁用及按类型查询等功能
+ * 提供分类的增删改查、启用禁用及按类型查询等功能。
+ * 主要负责处理前端发送的分类相关请求，调用服务层进行业务逻辑处理，并返回结果。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @RestController("adminCategoryController")
 @RequestMapping("/admin/category")

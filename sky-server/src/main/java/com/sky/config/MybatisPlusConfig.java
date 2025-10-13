@@ -10,7 +10,11 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * MyBatis-Plus 配置类
- * 用于配置 MyBatis-Plus 插件，如分页插件等
+ * 用于配置 MyBatis-Plus 插件，如分页插件等。
+ * 主要负责配置 MyBatis-Plus 拦截器，用于在数据库操作中添加分页等功能。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @Configuration
 @MapperScan("com.sky.mapper")

@@ -15,16 +15,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * JWT 令牌校验拦截器
- * 负责在后台管理端请求到达 Controller 前校验 JWT 令牌的有效性，
+ * 负责在前台用户端请求到达 Controller 前校验 JWT 令牌的有效性，
  * 并在请求结束后清理线程上下文，防止线程复用造成数据串扰。
- * 主要负责在后台管理端的请求中校验 JWT 令牌，确保只有合法的管理员请求才能访问受保护的资源。
- *
- * @author NecoOcean
- * @date 2025/10/13
  */
 @Component
 @Slf4j
-public class JwtTokenAdminInterceptor implements HandlerInterceptor {
+public class JwtTokenUserInterceptor implements HandlerInterceptor {
 
     /**
      * JWT 配置属性，包含密钥、请求头名称等
@@ -43,28 +39,36 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 判断当前拦截到的是 Controller 的方法还是其他静态资源
+        // 判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
             // 当前拦截到的不是动态方法，直接放行
             return true;
         }
 
         // 1、从请求头中获取令牌
-        String token = request.getHeader(jwtProperties.getAdminTokenName());
+        String token = request.getHeader(jwtProperties.getUserTokenName());
+
+        // 若请求头中无令牌，直接返回401
+        if (token == null || token.trim().isEmpty()) {
+            log.warn("请求头缺少JWT令牌，拒绝访问");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
 
         // 2、校验令牌
         try {
             log.info("jwt校验:{}", token);
-            Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
-            log.info("当前员工id：{}", empId);
-            // 写入当前员工ID到线程上下文，供后续审计字段使用
-            BaseContext.setCurrentId(empId);
+            Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
+            Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
+            // 将当前用户id存入线程上下文
+            BaseContext.setCurrentId(userId);
+            log.info("当前用户id：{}", userId);
             // 3、通过，放行
             return true;
         } catch (Exception ex) {
-            // 4、不通过，响应401状态码
-            response.setStatus(401);
+            // 4、不通过，响应状态码401
+            log.error("JWT令牌校验失败: {}", ex.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
     }

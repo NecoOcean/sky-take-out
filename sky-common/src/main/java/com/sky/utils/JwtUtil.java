@@ -25,6 +25,12 @@ public class JwtUtil {
      * @return 生成的 JWT 字符串
      */
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims) {
+        if (secretKey == null || secretKey.trim().isEmpty()) {
+            throw new IllegalArgumentException("JWT secretKey must not be null or empty");
+        }
+        if (secretKey.length() < 32) { // HS256建议≥256bit（32字符）
+            throw new IllegalArgumentException("JWT secretKey length must be >= 32 characters");
+        }
         // 指定签名算法
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -49,6 +55,12 @@ public class JwtUtil {
      * @return 解析后的 Claims 对象，包含令牌中的声明信息
      */
     public static Claims parseJWT(String secretKey, String token) {
+        if (secretKey == null || secretKey.trim().isEmpty()) {
+            throw new IllegalArgumentException("JWT secretKey must not be null or empty");
+        }
+        if (secretKey.length() < 32) {
+            throw new IllegalArgumentException("JWT secretKey length must be >= 32 characters");
+        }
         // 使用密钥构建解析器
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8))) // 设置验证签名的密钥

@@ -9,7 +9,10 @@ import java.util.List;
 
 /**
  * 套餐服务接口
- * 提供对套餐的新增、分页查询等操作
+ * 提供对套餐的新增、分页查询等操作，支持批量操作。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 public interface SetmealService {
 

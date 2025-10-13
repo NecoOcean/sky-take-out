@@ -18,7 +18,11 @@ import java.util.List;
 
 /**
  * 套餐管理控制器
- * 提供套餐的增删改查、起售停售等后台管理接口
+ * 提供套餐的增删改查、起售停售等后台管理接口。
+ * 主要负责处理前端发送的套餐相关请求，调用服务层进行业务逻辑处理，并返回结果。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @RestController
 @RequestMapping("/admin/setmeal")

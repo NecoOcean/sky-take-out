@@ -8,7 +8,10 @@ import com.sky.result.PageResult;
 
 /**
  * 员工业务接口
- * 提供员工登录、新增、分页查询、状态更新、编辑及详情查询等功能
+ * 提供员工登录、新增、分页查询、状态更新、编辑及详情查询等功能，支持批量操作。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 public interface EmployeeService {
 

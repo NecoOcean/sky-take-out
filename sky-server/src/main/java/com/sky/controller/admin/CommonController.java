@@ -20,6 +20,10 @@ import java.util.UUID;
  * 通用接口控制器
  * 提供文件上传等通用功能
  * 访问路径前缀：/admin/common
+ * 主要负责处理前端发送的通用请求，调用服务层进行业务逻辑处理，并返回结果。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
  */
 @RestController
 @RequestMapping("/admin/common")

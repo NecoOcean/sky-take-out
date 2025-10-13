@@ -6,6 +6,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * 主应用类
+ * 启动SkyTakeOut应用，配置MyBatis扫描Mapper接口、开启事务管理、配置日志输出。
+ *
+ * @author NecoOcean
+ * @date 2025/10/13
+ */
 @SpringBootApplication
 @EnableTransactionManagement // 开启注解方式的事务管理
 @MapperScan("com.sky.mapper")

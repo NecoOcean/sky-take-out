@@ -1,50 +1,75 @@
 # ==================== 服务器端口配置 ====================
 server:
-  # 应用启动端口
+  # 应用启动端口（建议生产环境通过环境变量注入，避免硬编码）
   port: 8080
 
 # ==================== Spring 全局配置 ====================
 spring:
-  # 激活的配置文件（dev/prod/test）
+  # 激活的配置文件（dev/prod/test），生产环境请改为 prod
   profiles:
     active: dev
   main:
-    # 允许循环依赖（Spring Boot 2.6+ 默认禁止）
+    # 允许循环依赖（Spring Boot 2.6+ 默认禁止，仅开发阶段开启，生产建议关闭）
     allow-circular-references: true
   # ==================== 数据源配置 ====================
   datasource:
-    # MySQL 驱动类名
-    driver-class-name: ${sky.datasource.driver-class-name}
-    # 数据库连接 URL：时区、编码、SSL、公钥检索等参数
-    url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    # 数据库用户名
-    username: ${sky.datasource.username}
-    # 数据库密码
-    password: ${sky.datasource.password}
+    # MySQL 驱动类名（推荐 com.mysql.cj.jdbc.Driver，已自动装配）
+    driver-class-name: ${sky.datasource.driver-class-name:com.mysql.cj.jdbc.Driver}
+    # 数据库连接 URL：时区、编码、SSL、公钥检索等参数（建议生产环境开启 SSL）
+    url: jdbc:mysql://${sky.datasource.host:localhost}:${sky.datasource.port:3306}/${sky.datasource.database:sky_take_out}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    # 数据库用户名（生产环境请使用环境变量注入）
+    username: ${sky.datasource.username:root}
+    # 数据库密码（生产环境请使用环境变量注入）
+    password: ${sky.datasource.password:123456}
+  # ==================== Redis 配置 ====================
   data:
     redis:
-      host: ${sky.redis.host}
-      port: ${sky.redis.port}
-      password: ${sky.redis.password}
-      database: ${sky.redis.database}
+      # Redis 主机地址（默认 localhost）
+      host: ${sky.redis.host:localhost}
+      # Redis 端口（默认 6379）
+      port: ${sky.redis.port:6379}
+      # Redis 密码（无密码可留空）
+      password: ${sky.redis.password:}
+      # Redis 数据库索引（默认 0）
+      database: ${sky.redis.database:0}
+  # ==================== 微信支付配置 ====================
+  wechat:
+    # 微信应用 AppID（必填，生产环境请使用环境变量注入）
+    appid: ${sky.wechat.appid}
+    # 微信应用密钥（必填，生产环境请使用环境变量注入）
+    secret: ${sky.wechat.secret}
+    # 微信支付商户号（必填）
+    mchid: ${sky.wechat.mchid}
+    # 商户证书序列号（必填）
+    mchSerialNo: ${sky.wechat.mchSerialNo}
+    # 商户私钥文件路径（必填，支持 classpath: 或绝对路径）
+    privateKeyFilePath: ${sky.wechat.privateKeyFilePath}
+    # 微信支付 APIv3 密钥（必填，32 位字符串）
+    apiV3Key: ${sky.wechat.apiV3Key}
+    # 微信支付平台证书路径（必填）
+    weChatPayCertFilePath: ${sky.wechat.weChatPayCertFilePath}
+    # 支付结果通知地址（必填，外网可访问）
+    notifyUrl: ${sky.wechat.notifyUrl}
+    # 退款结果通知地址（必填，外网可访问）
+    refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
 
 # ==================== springdoc-openapi（Swagger 3）配置 ====================
 springdoc:
   api-docs:
-    # 是否启用 OpenAPI 3 接口文档
+    # 是否启用 OpenAPI 3 接口文档（生产环境建议关闭）
     enabled: true
-    # 接口文档的访问路径
+    # 接口文档的访问路径（默认 /v3/api-docs）
     path: /v3/api-docs
   swagger-ui:
-    # 是否启用 Swagger UI
+    # 是否启用 Swagger UI（生产环境建议关闭）
     enabled: true
-    # Swagger UI 的访问路径
+    # Swagger UI 的访问路径（默认 /swagger-ui/index.html）
     path: /swagger-ui/index.html
-  # 扫描所有 Controller 包
+  # 扫描所有 Controller 包（多个包用逗号分隔）
   packages-to-scan: com.sky.controller
-  # 匹配所有路径
+  # 匹配所有路径（Ant 风格表达式）
   paths-to-match: /**
-  # API 分组配置：按 admin / user 拆分
+  # API 分组配置：按 admin / user 拆分（可扩展更多分组）
   group-configs:
     - group: admin
       packages-to-scan: com.sky.controller.admin
@@ -54,56 +79,61 @@ springdoc:
       paths-to-match: /user/**
 
 # ==================== OpenAPI 文档元数据配置 ====================
-# 定义 API 文档的标题、描述、版本等全局信息
+# 定义 API 文档的标题、描述、版本等全局信息（支持多语言）
 openapi:
   info:
-    # API 文档标题
+    # API 文档标题（显示在 Swagger UI 顶部）
     title: 苍穹外卖项目 API 文档
-    # API 文档详细描述
+    # API 文档详细描述（支持 Markdown）
     description: 苍穹外卖项目的后台管理系统和移动端用户的API接口文档。
-    # API 版本号
+    # API 版本号（遵循语义化版本规范）
     version: 1.0.0
 
 # ==================== MyBatis-Plus 配置 ====================
 mybatis-plus:
-  # 实体类所在包路径（用于别名扫描）
+  # 实体类所在包路径（用于别名扫描，多个包用逗号分隔）
   type-aliases-package: com.sky.entity
   configuration:
-    # 开启驼峰命名自动映射（user_name → userName）
+    # 开启驼峰命名自动映射（user_name → userName，默认 true）
     map-underscore-to-camel-case: true
+    # 打印 SQL 日志到控制台（开发环境开启，生产建议关闭）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # ==================== 日志级别配置 ====================
 logging:
   level:
     com:
       sky:
-        # Mapper 层日志：打印 SQL
+        # Mapper 层日志：打印 SQL（仅开发环境使用 DEBUG）
         mapper: debug
-        # Service 层日志：INFO 级别
+        # Service 层日志：INFO 级别（生产环境可调整为 WARN）
         service: info
-        # Controller 层日志：INFO 级别
+        # Controller 层日志：INFO 级别（生产环境可调整为 WARN）
         controller: info
+  # 日志输出格式（可选，统一时间戳与线程信息）
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 # ==================== 项目自定义配置（sky 前缀） ====================
 sky:
   # ==================== JWT 配置 ====================
   jwt:
-    # 管理端 JWT 签名密钥（长度 ≥ 256 bit，生产环境请使用环境变量注入）
-    admin-secret-key: ZK8fM1pQk9s2cT7vR4xY9aL3uN6eB2dH
-    # 管理端 JWT 过期时间（单位：毫秒，2 小时）
-    admin-ttl: 7200000
-    # 管理端前端传递的令牌名称
-    admin-token-name: token
-    # （可选）用户端 JWT 密钥；生产环境建议使用环境变量注入
-    # user-secret-key: A2b4D6f8H0j2L4n6P8r0T2v4X6z8B0d2F4h6J8k0M2q4S6u8W0y2C4e6G8
+    # 管理端 JWT 签名密钥（长度 ≥ 256 bit，生产环境请使用环境变量注入，严禁硬编码）
+    admin-secret-key: ${sky.jwt.admin-secret-key:ZK8fM1pQk9s2cT7vR4xY9aL3uN6eB2dH}
+    # 管理端 JWT 过期时间（单位：毫秒，2 小时，生产环境可缩短）
+    admin-ttl: ${sky.jwt.admin-ttl:7200000}
+    # 管理端前端传递的令牌名称（默认 token，可自定义）
+    admin-token-name: ${sky.jwt.admin-token-name:token}
+    # （可选）用户端 JWT 密钥；生产环境建议使用环境变量注入，长度 ≥ 256 bit
+    # user-secret-key: ${sky.jwt.user-secret-key:A2b4D6f8H0j2L4n6P8r0T2v4X6z8B0d2F4h6J8k0M2q4S6u8W0y2C4e6G8}
 
   # ==================== 阿里云 OSS 配置 ====================
   alioss:
-    # OSS 访问端点
+    # OSS 访问端点（如 https://oss-cn-hangzhou.aliyuncs.com，必填）
     endpoint: ${sky.alioss.endpoint}
-    # AccessKey ID
+    # AccessKey ID（必填，生产环境请使用环境变量注入）
     access-key-id: ${sky.alioss.access-key-id}
-    # AccessKey Secret
+    # AccessKey Secret（必填，生产环境请使用环境变量注入）
     access-key-secret: ${sky.alioss.access-key-secret}
-    # 存储空间名称
+    # 存储空间名称（全局唯一，必填）
     bucket-name: ${sky.alioss.bucket-name}
