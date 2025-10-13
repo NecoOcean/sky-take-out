@@ -85,6 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @throws PasswordErrorException   密码错误
      * @throws AccountLockedException   账号被禁用
      */
+    @Override
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
         String username = employeeLoginDTO.getUsername();
         String password = employeeLoginDTO.getPassword();
@@ -144,6 +145,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeDTO 新增员工数据传输对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addEmployee(EmployeeDTO employeeDTO) {
         // 组装实体
         Employee employee = Employee.builder()
@@ -159,8 +161,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 设置默认密码并加密（与登录保持一致使用 BCrypt）
         String defaultPlainPassword = "123456";
         employee.setPassword(encryptPassword(defaultPlainPassword));
-
-        // 审计字段不再手动赋值，依赖 MyBatis-Plus 自动填充
 
         // 保存
         employeeMapper.insert(employee);

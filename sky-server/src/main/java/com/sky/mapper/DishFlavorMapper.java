@@ -2,7 +2,6 @@ package com.sky.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sky.entity.DishFlavor;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.List;
  * @author NecoOcean
  * @date 2025/10/13
  */
-@Mapper
 public interface DishFlavorMapper extends BaseMapper<DishFlavor> {
     /**
      * 批量插入菜品口味

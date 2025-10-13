@@ -184,6 +184,7 @@ public class DishServiceImpl implements DishService {
      * @throws DeletionNotAllowedException 当菜品处于起售中或被套餐引用时抛出
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteBatch(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -223,7 +224,7 @@ public class DishServiceImpl implements DishService {
      * @param id     菜品 ID，必须已存在
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void startOrStop(Integer status, Long id) {
         // 1. 更新菜品状态（依赖 MyBatis-Plus 自动填充 updateTime/updateUser）
         Dish toUpdate = new Dish();

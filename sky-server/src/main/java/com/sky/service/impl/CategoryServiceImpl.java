@@ -18,6 +18,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
-    
+
     /**
      * 分类映射器，用于数据库操作
      */
@@ -95,6 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
      * @throws DeletionNotAllowedException 当分类已被菜品或套餐引用时抛出
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         // 检查分类是否关联了菜品
         Long dishCount = dishMapper.selectCount(new LambdaQueryWrapper<Dish>().eq(Dish::getCategoryId, id));
@@ -145,7 +147,7 @@ public class CategoryServiceImpl implements CategoryService {
     /**
      * 根据类型查询分类列表
      *
-     * @param type 分类类型：1菜品分类 2套餐分类
+     * @param type 分类类型：1 菜品分类 , 2 套餐分类
      * @return 分类列表，按sort升序、更新时间降序排列
      */
     @Override

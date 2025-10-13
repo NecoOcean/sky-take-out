@@ -34,14 +34,6 @@ sky:
     password: 123456
     # Redis 数据库索引（默认0）
     database: 0
-  # C端用户JWT配置（用于微信登录令牌生成与校验）
-  jwt:
-    # 用户端JWT签名密钥（长度≥32字符），仅示例，生产请用环境变量注入
-    user-secret-key: U1r4x7Z0v3K6n9Q2t5M8p1B4e7H0j3L6a9C2f5R8u1W4y7Z0x3K6n9Q2t5M8p1
-    # 用户端JWT有效期（毫秒），示例为2小时
-    user-ttl: 7200000
-    # 用户端令牌请求头名称
-    user-token-name: token
   # 微信支付/小程序相关配置
   wechat:
     # 微信小程序appid

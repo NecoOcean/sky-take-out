@@ -66,6 +66,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param setmealDTO 套餐数据传输对象，包含套餐信息和包含的菜品信息
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void savaWithDIsh(SetmealDTO setmealDTO) {
         // 保存套餐信息
         Setmeal setmeal = new Setmeal();
@@ -229,6 +230,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @throws SetmealEnableFailedException 存在启售套餐时抛出
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(List<Long> ids) {
         // 参数校验
         if (ids == null || ids.isEmpty()) {
