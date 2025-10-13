@@ -55,7 +55,7 @@ public class DishController {
     @GetMapping("/page")
     @Operation(summary = "菜品分页查询",
             description = "支持根据分类、名称、状态等条件分页查询菜品列表，返回包含口味信息的分页数据")
-    public Result<PageResult> page(@Parameter(description = "分页查询参数", required = false)
+    public Result<PageResult> page(@Parameter(description = "分页查询参数")
                                    DishPageQueryDTO dishPageQueryDTO) {
         log.info("菜品分页查询:{}", dishPageQueryDTO);
         PageResult pageResult = dishService.pageQuery(dishPageQueryDTO);
