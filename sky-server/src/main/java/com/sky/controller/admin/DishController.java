@@ -72,7 +72,7 @@ public class DishController {
     @DeleteMapping
     @Operation(summary = "菜品批量删除",
             description = "根据菜品ID列表批量删除菜品，若菜品存在关联订单则无法删除")
-    public Result delete(@Parameter(description = "菜品ID列表", required = true, in = ParameterIn.QUERY)
+    public Result<String> delete(@Parameter(description = "菜品ID列表", required = true, in = ParameterIn.QUERY)
                          @RequestParam List<Long> ids) {
         log.info("菜品批量删除：{}", ids);
         dishService.deleteBatch(ids);
@@ -108,7 +108,7 @@ public class DishController {
     @PutMapping
     @Operation(summary = "修改菜品",
             description = "管理员端修改菜品基本信息及口味信息，修改后需重新审核")
-    public Result update(@Parameter(description = "菜品及口味信息", required = true)
+    public Result<String> update(@Parameter(description = "菜品及口味信息", required = true)
                          @RequestBody DishDTO dishDTO) {
         log.info("修改菜品：{}", dishDTO);
         dishService.updateWithFlavor(dishDTO);

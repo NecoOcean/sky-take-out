@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
      * @return 封装后的统一响应结果，包含错误信息
      */
     @ExceptionHandler(BaseException.class)
-    public Result exceptionHandler(BaseException ex) {
+    public Result<String> exceptionHandler(BaseException ex) {
         log.error("业务异常信息：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
      * @return 封装后的统一响应结果，若检测到重复键则返回友好提示，否则返回未知错误
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
+    public Result<String> exceptionHandler(SQLIntegrityConstraintViolationException ex) {
         String message = ex.getMessage();
         // 判断异常信息中是否包含“Duplicate key”关键字，识别重复键冲突
         if (message.contains("Duplicate key")) {

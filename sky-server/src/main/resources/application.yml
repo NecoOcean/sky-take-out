@@ -21,6 +21,12 @@ spring:
     username: ${sky.datasource.username}
     # 数据库密码
     password: ${sky.datasource.password}
+  data:
+    redis:
+      host: ${sky.redis.host}
+      port: ${sky.redis.port}
+      password: ${sky.redis.password}
+      database: ${sky.redis.database}
 
 # ==================== springdoc-openapi（Swagger 3）配置 ====================
 springdoc:

@@ -148,7 +148,7 @@ public class DishServiceImpl implements DishService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         Map<Long, String> categoryNameMap = categoryIds.isEmpty() ? Map.of() :
-                categoryMapper.selectBatchIds(categoryIds).stream()
+                categoryMapper.selectByIds(categoryIds).stream()
                         .collect(Collectors.toMap(Category::getId, Category::getName));
 
         // 5. 组装 VO 列表
@@ -189,7 +189,7 @@ public class DishServiceImpl implements DishService {
         }
 
         // 1. 查询待删除菜品
-        List<Dish> dishList = dishMapper.selectBatchIds(ids);
+        List<Dish> dishList = dishMapper.selectByIds(ids);
 
         // 2. 校验状态
         boolean hasOnSale = dishList.stream()
@@ -206,7 +206,7 @@ public class DishServiceImpl implements DishService {
 
         // 4. 级联删除
         dishFlavorMapper.deleteByDishIds(ids);
-        dishMapper.deleteBatchIds(ids);
+        dishMapper.deleteByIds(ids);
 
         log.info("批量删除菜品成功，IDs：{}", ids);
     }

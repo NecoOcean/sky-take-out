@@ -42,7 +42,7 @@ public class SetmealController {
     @PostMapping
     @Operation(summary = "新增套餐", description = "新增套餐并同时保存套餐关联的菜品列表")
     @Parameter(name = "setmealDTO", description = "套餐数据传输对象，必填", required = true)
-    public Result add(@RequestBody SetmealDTO setmealDTO) {
+    public Result<String> add(@RequestBody SetmealDTO setmealDTO) {
         log.info("新增套餐:{}", setmealDTO);
         // 保存套餐及其关联菜品
         setmealService.savaWithDIsh(setmealDTO);
@@ -79,7 +79,7 @@ public class SetmealController {
             @Parameter(name = "status", description = "套餐销售状态，1为起售，0为停售", required = true, example = "1"),
             @Parameter(name = "id", description = "套餐主键id", required = true, example = "123")
     })
-    public Result status(@PathVariable Integer status, @RequestParam Long id) {
+    public Result<String> status(@PathVariable Integer status, @RequestParam Long id) {
         log.info("套餐起售、停售: 状态:{}，id:{}", status, id);
         setmealService.startOrStop(status, id);
         return Result.success();
@@ -111,7 +111,7 @@ public class SetmealController {
     @PutMapping
     @Operation(summary = "修改套餐信息", description = "根据套餐id更新套餐基本信息及关联菜品列表")
     @Parameter(name = "setmealDTO", description = "套餐数据传输对象，必填", required = true)
-    public Result update(@RequestBody SetmealDTO setmealDTO) {
+    public Result<String> update(@RequestBody SetmealDTO setmealDTO) {
         log.info("修改套餐:{}", setmealDTO);
         setmealService.update(setmealDTO);
         return Result.success();
@@ -127,7 +127,7 @@ public class SetmealController {
     @DeleteMapping
     @Operation(summary = "批量删除套餐", description = "根据套餐id列表批量删除套餐及其关联菜品")
     @Parameter(name = "ids", description = "待删除的套餐id列表，必填", required = true, example = "[1,2,3]")
-    public Result delete(@RequestParam List<Long> ids) {
+    public Result<String> delete(@RequestParam List<Long> ids) {
         log.info("批量删除，ids:{}", ids);
         setmealService.deleteByIds(ids);
         return Result.success();

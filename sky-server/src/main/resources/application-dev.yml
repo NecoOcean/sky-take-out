@@ -24,3 +24,8 @@ sky:
     access-key-secret: kOviRxEwkRM8HXZwqA4pMlruexUiwM
     # OSS 存储空间名称
     bucket-name: sky-take-out-fileupload-necoocean
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 0

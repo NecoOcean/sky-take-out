@@ -26,6 +26,6 @@ public class PageResult implements Serializable {
      * 当前页数据集合
      * 当前分页查询结果的数据列表
      */
-    private List records;
+    private List<?> records;
 
 }
