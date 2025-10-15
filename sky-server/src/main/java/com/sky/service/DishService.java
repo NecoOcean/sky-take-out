@@ -117,4 +117,6 @@ public interface DishService {
      * @return 该分类下所有启用状态的菜品列表
      */
     List<Dish> list(Long categoryId);
+
+    List<DishVO> listWithFlavor(Dish dish);
 }

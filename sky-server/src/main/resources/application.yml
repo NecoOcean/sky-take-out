@@ -126,13 +126,13 @@ sky:
     admin-token-name: token
     # （可选）用户端 JWT 密钥；生产环境建议使用环境变量注入，长度 ≥ 256 bit
     # user-secret-key: ${sky.jwt.user-secret-key:A2b4D6f8H0j2L4n6P8r0T2v4X6z8B0d2F4h6J8k0M2q4S6u8W0y2C4e6G8}
-  # C端用户JWT配置（用于微信登录令牌生成与校验）
+    # C端用户JWT配置（用于微信登录令牌生成与校验）
     # 用户端JWT签名密钥（长度≥32字符），仅示例，生产请用环境变量注入
     user-secret-key: U1r4x7Z0v3K6n9Q2t5M8p1B4e7H0j3L6a9C2f5R8u1W4y7Z0x3K6n9Q2t5M8p1
     # 用户端JWT有效期（毫秒），示例为2小时
     user-ttl: 7200000
-    # 用户端令牌请求头名称
-    user-token-name: token
+    # 用户端令牌请求头名称（例如 token 或 authentication）。此处应填写“请求头的名称”，不是令牌的值！
+    user-token-name: authentication
   # ==================== 阿里云 OSS 配置 ====================
   alioss:
     # OSS 访问端点（如 https://oss-cn-hangzhou.aliyuncs.com，必填）

@@ -1,6 +1,7 @@
 package com.sky.config;
 
 import com.sky.interceptor.JwtTokenAdminInterceptor;
+import com.sky.interceptor.JwtTokenUserInterceptor;
 import com.sky.json.JacksonObjectMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
     /**
+     * JWT令牌用户端拦截器，用于验证 /user/** 请求中的JWT令牌并写入当前用户ID到线程上下文
+     */
+    @Resource
+    private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+
+    /**
      * 注册自定义拦截器
      * 拦截所有/admin/**路径的请求，排除登录及Swagger相关路径
      *
@@ -41,6 +48,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns(
                         "/admin/employee/login",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
+                );
+
+        // 注册C端用户拦截器：拦截 /user/**，排除登录与Swagger相关路径
+        registry.addInterceptor(jwtTokenUserInterceptor)
+                .addPathPatterns("/user/**")
+                .excludePathPatterns(
+                        "/user/user/login",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html"

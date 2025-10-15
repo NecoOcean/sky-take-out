@@ -23,6 +23,8 @@ import java.util.Map;
 /**
  * C端用户控制器
  * 提供用户登录、退出等核心接口
+ * @author NecoOcean
+ * @date 2025-10-15
  */
 @RestController
 @RequestMapping("/user/user")

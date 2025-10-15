@@ -20,6 +20,7 @@ import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -254,5 +255,18 @@ public class SetmealServiceImpl implements SetmealService {
         LambdaQueryWrapper<SetmealDish> deleteWrapper = new LambdaQueryWrapper<>();
         deleteWrapper.in(SetmealDish::getSetmealId, ids);
         setmealDishMapper.delete(deleteWrapper);
+    }
+
+    @Override
+    public List<Setmeal> list(Setmeal setmeal) {
+        return setmealMapper.selectList(Wrappers.lambdaQuery(Setmeal.class)
+                .like(StringUtils.isNotBlank(setmeal.getName()), Setmeal::getName, setmeal.getName())
+                .eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId())
+                .eq(setmeal.getStatus() != null, Setmeal::getStatus, setmeal.getStatus()));
+    }
+
+    @Override
+    public List<DishItemVO> getDishItemById(Long id) {
+        return setmealMapper.getDishItemBySetmealId(id);
     }
 }

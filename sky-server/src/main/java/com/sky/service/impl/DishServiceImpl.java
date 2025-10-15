@@ -24,10 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -328,5 +325,30 @@ public class DishServiceImpl implements DishService {
                 Wrappers.<Dish>lambdaQuery()
                         .eq(Dish::getCategoryId, categoryId)
                         .eq(Dish::getStatus, StatusConstant.ENABLE));
+    }
+
+    @Override
+    public List<DishVO> listWithFlavor(Dish dish) {
+        LambdaQueryWrapper<Dish> queryWrapper = Wrappers.<Dish>lambdaQuery()
+                .eq(Dish::getCategoryId, dish.getCategoryId())
+                .eq(Dish::getStatus, StatusConstant.ENABLE);
+        List<Dish> dishList = dishMapper.selectList(queryWrapper);
+
+        List<DishVO> dishVOList = new ArrayList<>();
+
+        for (Dish d : dishList) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d, dishVO);
+
+            // 使用条件构造器根据菜品id查询对应的口味
+            LambdaQueryWrapper<DishFlavor> flavorQueryWrapper = Wrappers.<DishFlavor>lambdaQuery()
+                    .eq(DishFlavor::getDishId, d.getId());
+            List<DishFlavor> flavors = dishFlavorMapper.selectList(flavorQueryWrapper);
+
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+
+        return dishVOList;
     }
 }

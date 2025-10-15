@@ -45,8 +45,8 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // 1、从请求头中获取令牌
-        String token = request.getHeader(jwtProperties.getUserTokenName());
+        // 1、从请求头中获取令牌（兼容多种常见头部名称）
+        String token = resolveToken(request);
 
         // 若请求头中无令牌，直接返回401
         if (token == null || token.trim().isEmpty()) {
@@ -87,5 +87,35 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
         // 清理线程上下文，避免线程复用导致数据串扰
         BaseContext.removeCurrentId();
         HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+    }
+
+    /**
+     * 解析请求头中的 JWT 令牌
+     * 优先使用配置的 user-token-name，其次兼容常见的 "token" 与 "Authorization: Bearer xxx" 格式
+     */
+    private String resolveToken(HttpServletRequest request) {
+        // 优先读取配置的用户端令牌头名称
+        String headerName = jwtProperties.getUserTokenName();
+        String token = (headerName == null || headerName.isBlank()) ? null : request.getHeader(headerName);
+
+        // 兼容前端常用的 "token" 头
+        if (token == null || token.isBlank()) {
+            token = request.getHeader("token");
+        }
+
+        // 兼容标准授权头：Authorization: Bearer <token>
+        if (token == null || token.isBlank()) {
+            String auth = request.getHeader("Authorization");
+            if (auth != null && !auth.isBlank()) {
+                String trimmed = auth.trim();
+                if (trimmed.toLowerCase().startsWith("bearer ")) {
+                    token = trimmed.substring(7).trim();
+                } else {
+                    token = trimmed;
+                }
+            }
+        }
+
+        return token;
     }
 }
