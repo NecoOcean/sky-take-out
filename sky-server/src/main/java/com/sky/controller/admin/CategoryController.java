@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,10 +44,9 @@ public class CategoryController {
      * @return 返回操作成功结果，无数据载体
      */
     @PostMapping
-    @Operation(summary = "新增分类",
-            description = "根据传入的DTO对象新增一条分类记录，要求名称唯一，排序号非负")
-    public Result<String> save(@Parameter(description = "分类信息DTO", required = true)
-                               @RequestBody CategoryDTO categoryDTO) {
+    @Operation(summary = "新增分类", description = "根据传入的DTO对象新增一条分类记录，要求名称唯一，排序号非负")
+    @CachePut(cacheNames = "categoryCache", key="#categoryDTO.id")
+    public Result<String> save(@RequestBody CategoryDTO categoryDTO) {
         log.info("新增分类：{}", categoryDTO);
         categoryService.save(categoryDTO);
         return Result.success();
@@ -58,10 +59,8 @@ public class CategoryController {
      * @return 返回分页结果对象，内含当前页数据列表及总记录数
      */
     @GetMapping("/page")
-    @Operation(summary = "分类分页查询",
-            description = "支持按名称模糊、类型、状态等条件分页查询分类列表，默认按排序号升序")
-    public Result<PageResult> page(@Parameter(description = "分页查询参数", required = false)
-                                   CategoryPageQueryDTO categoryPageQueryDTO) {
+    @Operation(summary = "分类分页查询", description = "支持按名称模糊、类型、状态等条件分页查询分类列表，默认按排序号升序")
+    public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO) {
         log.info("分页查询：{}", categoryPageQueryDTO);
         PageResult pageResult = categoryService.page(categoryPageQueryDTO);
         return Result.success(pageResult);
@@ -74,10 +73,9 @@ public class CategoryController {
      * @return 返回操作成功结果，无数据载体
      */
     @DeleteMapping
-    @Operation(summary = "删除分类",
-            description = "根据主键ID删除分类，若分类已被菜品或套餐引用则不允许删除")
-    public Result<String> deleteById(@Parameter(description = "分类主键ID", required = true)
-                                     @RequestParam Long id) {
+    @Operation(summary = "删除分类", description = "根据主键ID删除分类，若分类已被菜品或套餐引用则不允许删除")
+    @CacheEvict(cacheNames = "categoryCache", allEntries = true)
+    public Result<String> deleteById(@RequestParam Long id) {
         log.info("删除分类：{}", id);
         categoryService.deleteById(id);
         return Result.success();
@@ -90,10 +88,9 @@ public class CategoryController {
      * @return 返回操作成功结果，无数据载体
      */
     @PutMapping
-    @Operation(summary = "修改分类",
-            description = "根据主键ID更新分类信息，允许修改名称、排序、类型、状态等字段")
-    public Result<String> update(@Parameter(description = "分类更新信息DTO", required = true)
-                                 @RequestBody CategoryDTO categoryDTO) {
+    @Operation(summary = "修改分类", description = "根据主键ID更新分类信息，允许修改名称、排序、类型、状态等字段")
+    @CacheEvict(cacheNames = "categoryCache", allEntries = true)
+    public Result<String> update(@RequestBody CategoryDTO categoryDTO) {
         log.info("修改分类：{}", categoryDTO);
         categoryService.update(categoryDTO);
         return Result.success();
@@ -107,12 +104,9 @@ public class CategoryController {
      * @return 返回操作成功结果，无数据载体
      */
     @PostMapping("/status/{status}")
-    @Operation(summary = "启用禁用分类",
-            description = "批量或单条切换分类状态，状态值只能为0或1")
-    public Result<String> startOrStop(@Parameter(description = "目标状态，1启用 0禁用", required = true)
-                                      @PathVariable("status") Integer status,
-                                      @Parameter(description = "分类主键ID", required = true)
-                                      @RequestParam Long id) {
+    @Operation(summary = "启用禁用分类", description = "批量或单条切换分类状态，状态值只能为0或1")
+    @CacheEvict(cacheNames = "categoryCache", allEntries = true)
+    public Result<String> startOrStop(@PathVariable("status") Integer status, @RequestParam Long id) {
         log.info("启用禁用分类：status={}, id={}", status, id);
         categoryService.startOrStop(status, id);
         return Result.success();
@@ -126,10 +120,8 @@ public class CategoryController {
      * @return 返回分类列表，按排序号升序排列
      */
     @GetMapping("/list")
-    @Operation(summary = "根据类型查询分类",
-            description = "查询启用的分类列表，可按类型筛选，结果按sort升序排列，用于下拉框或列表展示")
-    public Result<List<Category>> list(@Parameter(description = "分类类型，1菜品 2套餐，留空查全部", required = false)
-                                       @RequestParam(required = false) Integer type) {
+    @Operation(summary = "根据类型查询分类", description = "查询启用的分类列表，可按类型筛选，结果按sort升序排列，用于下拉框或列表展示")
+    public Result<List<Category>> list(@RequestParam(required = false) Integer type) {
         log.info("根据类型查询分类：type={}", type);
         List<Category> list = categoryService.list(type);
         return Result.success(list);
